@@ -100,3 +100,4 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.pi
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\Debug\Time.piok.pdb
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\Debug\DSQ.baml
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\Debug\DSQ.g.cs
+D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\bin\Debug\Time.piok.exe.config
