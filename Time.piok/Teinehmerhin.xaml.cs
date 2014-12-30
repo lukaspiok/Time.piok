@@ -51,6 +51,7 @@ namespace Time.piok
             Teilnehmer.Nachname = name_txt.Text;
             Teilnehmer.Vorname = vname_txt.Text;
             Teilnehmer.Startnummer = int.Parse(stnr_txt.Text);
+            Teilnehmer.Geburtsjahr = int.Parse(txt_jahr.Text);
             ComboBoxItem typeItem = (ComboBoxItem)cb_ges.SelectedItem;
             Teilnehmer.Geschlecht = typeItem.Content.ToString();
             Teilnehmer.Klasse = cb_cat.SelectedItem.ToString(); ;

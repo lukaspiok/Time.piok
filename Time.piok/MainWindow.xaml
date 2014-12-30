@@ -31,6 +31,7 @@
             <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
                 <MenuItem Name="btn_remove_comp" Header="Teilnehmer entfernen" Click="btn_remove_Click"/>
                 <MenuItem Name="btn_comp_excel" Header="Aus Exceldatei auslesen"  Click="btnexcel_Click"/>
+                <MenuItem Name="btn_klasszuordnen" Header="Den Klassen zuordnen" Click="btnklasszu_Click"/>
             </MenuItem>
             <MenuItem Name="btn_add_class" Header="Klassen verwalten" Click="btn_categories_Click"/>
             <MenuItem Name="btn_dsq" Header="DSQ" Click="btn_dsq_Click" />

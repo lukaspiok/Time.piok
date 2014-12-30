@@ -72,11 +72,18 @@ namespace Time.piok
                     wr.Close();
                 }
             }
+           
         }
 
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+            
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.DialogResult = true;
         }
     }
 }

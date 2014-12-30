@@ -20,6 +20,7 @@ namespace Time.piok
         DateTime startzeit;
         DateTime zielzeit;
         int rang;
+        int geburtsjahr;
         TimeSpan endzeit;
         TimeSpan abstand;
         string loaded;
@@ -33,6 +34,17 @@ namespace Time.piok
             get
             {
                 return vname;
+            }
+        }
+        public int Geburtsjahr
+        {
+            set
+            {
+                geburtsjahr = value;
+            }
+            get
+            {
+                return geburtsjahr;
             }
         }
         public string Nachname
@@ -74,6 +86,7 @@ namespace Time.piok
             set
             {
                 klasse = value;
+                OnPropertyChanged("Klasse");
             }
             get
             {
