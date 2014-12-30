@@ -1,0 +1,22 @@
+﻿<Window x:Class="Time.piok.Kategoriehin"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Time.piok" Height="350" Width="550" ResizeMode="CanResizeWithGrip">
+    <Grid>
+        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Margin="0,21,0.4,-0.2">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Bezeichnung" Width="160" DisplayMemberBinding="{Binding Path=Name}"/>
+                    <GridViewColumn Header="Von Jahr" Width="110" DisplayMemberBinding="{Binding Path=Anfangsjahr}"/>
+                    <GridViewColumn Header="Bis Jahr" Width="140" DisplayMemberBinding="{Binding Path=Endjahr}"/>
+                    <GridViewColumn Header="Geschlecht" Width="100" DisplayMemberBinding="{Binding Path=Geschlecht}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Menu HorizontalAlignment="Left" Height="22" Margin="1,-1,0,0" VerticalAlignment="Top" Width="507">
+            <MenuItem Name="btn_add_cat" Header="Kategorie hinzufügen" Click="btn_add_cat_Click"/>
+            <MenuItem Name="btn_remove_cat" Header="Kategorie entfernen" Click="btn_remove_cat_Click"/>
+            <MenuItem x:Name="btn_close" Header="Schliessen" Click="btn_close_Click"/>
+        </Menu>
+    </Grid>
+</Window>
