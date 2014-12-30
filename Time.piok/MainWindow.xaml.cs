@@ -371,6 +371,10 @@ namespace Time.piok
                                     if (int.TryParse(Teile[4], out sec))
                                         startzeit.AddSeconds(sec);
                                 }
+<<<<<<< HEAD
+=======
+                                //test von Klaus
+>>>>>>> 79a220570a33f3714538589de851abb21f55fcbd
                                 Startzeit_zuweisen(startzeit.ToString(), position);
                             }
                         }
