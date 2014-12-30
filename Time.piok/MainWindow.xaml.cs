@@ -524,6 +524,7 @@ namespace Time.piok
             Regex myPattern = new Regex("[0-9]{4} [A-Z]");
 
             result = myPattern.IsMatch(s);
+            //test
             return result;
         }
 

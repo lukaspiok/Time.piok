@@ -25,3 +25,6 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.pi
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\x64\Debug\Time.piok.exe
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\x64\Debug\Time.piok.pdb
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csprojResolveAssemblyReference.cache
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\bin\x64\Debug\Time.piok.exe.config
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.exe
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.pdb
