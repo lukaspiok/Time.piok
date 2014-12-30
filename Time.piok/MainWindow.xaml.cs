@@ -23,6 +23,9 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
+using System.Data.OleDb;
+using System.Data;
+using System.Globalization;
 
 namespace Time.piok
 {
@@ -524,7 +527,6 @@ namespace Time.piok
             Regex myPattern = new Regex("[0-9]{4} [A-Z]");
 
             result = myPattern.IsMatch(s);
-            //test
             return result;
         }
 
@@ -690,11 +692,36 @@ namespace Time.piok
         private void btnexcel_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Filter = "Exceldateien (.xls, .xlsx)|*.xls;*.xlsx"; 
+            dlg.Filter = "Exceldateien (.csv, .csv)|*.csv;*.csv"; 
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
-                string filename = dlg.FileName;
+                String[] values = File.ReadAllText(dlg.FileName).Split('\n');
+                string[] strTmp;
+
+                foreach(string str in values)
+                {
+                    Teilnehmer t = new Teilnehmer();
+
+                    strTmp = str.Split(';');
+
+                    if (strTmp[0] == "")
+                        break;
+
+                    t.Startnummer = Convert.ToInt16(strTmp[0]);
+                    t.Vorname = strTmp[1];
+                    t.Nachname = strTmp[2];
+                    t.Geschlecht = strTmp[3];
+                    t.Geschlecht = strTmp[4];
+
+                    liste.Add(t);
+
+                    using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
+                    {
+                        xs.Serialize(wr, liste);
+                        wr.Close();
+                    }
+                }
             }
         }
     }
