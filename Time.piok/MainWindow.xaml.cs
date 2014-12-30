@@ -371,7 +371,6 @@ namespace Time.piok
                                     if (int.TryParse(Teile[4], out sec))
                                         startzeit.AddSeconds(sec);
                                 }
-
                                 Startzeit_zuweisen(startzeit.ToString(), position);
                             }
                         }
@@ -509,6 +508,28 @@ namespace Time.piok
             liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Endzeit = TimeSpan.Parse("00:00:00.000000");
         }
+        private void Abstand_ber()
+        {
+            Teilnehmer th = new Teilnehmer();
+            th.Rang = 1;
+            for (int i = 0; i < listek.Count; i++)
+            {
+                th.Klasse = listek[i].Name;
+                var q = liste.IndexOf(liste.Where(teil => teil.Rang == 1).FirstOrDefault());
+                int position = q;
+                if(position!=-1)
+                {
+                    for(int x = 0;x<liste.Count;x++)
+                    {
+                        if(liste[x].Klasse == th.Klasse)
+                        {
+                            if(liste[x].Status == "OK")
+                                liste[x].Abstand = liste[position].Endzeit - liste[x].Endzeit;
+                        }
+                    }
+                }
+            }
+        }
         
         private void AlgeProtocol(string s)
         {
@@ -524,7 +545,6 @@ namespace Time.piok
             Regex myPattern = new Regex("[0-9]{4} [A-Z]");
 
             result = myPattern.IsMatch(s);
-            //test
             return result;
         }
 
@@ -665,6 +685,7 @@ namespace Time.piok
         {
             SortView();
             Rang_zuweisen();
+            Abstand_ber();
         }
 
         private void SortView()

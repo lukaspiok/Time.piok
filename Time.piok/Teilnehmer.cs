@@ -21,6 +21,7 @@ namespace Time.piok
         DateTime zielzeit;
         int rang;
         TimeSpan endzeit;
+        TimeSpan abstand;
         string loaded;
         string status;
         public string Vorname
@@ -45,6 +46,17 @@ namespace Time.piok
                 return nname;
             }
 
+        }
+        public TimeSpan Abstand
+        {
+            set
+            {
+                abstand = value;
+            }
+            get
+            {
+                return abstand;
+            }
         }
         public int Startnummer
         {
@@ -142,5 +154,6 @@ namespace Time.piok
         {
             return Startnummer.Equals(other.Startnummer);
         }
+        
     }
 }

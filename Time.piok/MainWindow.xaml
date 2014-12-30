@@ -13,7 +13,7 @@
                     <GridViewColumn Header="Klasse" Width="130" DisplayMemberBinding="{Binding Path=Klasse}"/>
                     <GridViewColumn Header="Status" Width="40" DisplayMemberBinding="{Binding Path=Status}"/>
                     <GridViewColumn Header="Zeit" Width="100" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
-                    <GridViewColumn Header="Abstand" Width="60" DisplayMemberBinding="{Binding Path=Abstand}"/>
+                    <GridViewColumn Header="Abstand" Width="60" DisplayMemberBinding="{Binding Path=Abstand, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
                 </GridView>
             </ListView.View>
             <ListView.GroupStyle>
