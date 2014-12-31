@@ -367,7 +367,7 @@ namespace Time.piok
                                     if (int.TryParse(Teile[4], out sec))
                                         zielzeit.AddSeconds(sec);
                                 }
-                                Zielzeit_zuweisen(zielzeit.ToString(), position);
+                                Zielzeit_zuweisen(Teile[4], position);
                             }
                             else if (Teile[3] == "1" || Teile[3] == "M1")
                             {
@@ -380,7 +380,7 @@ namespace Time.piok
                                         startzeit.AddSeconds(sec);
                                 }
 
-                                Startzeit_zuweisen(startzeit.ToString(), position);
+                                Startzeit_zuweisen(Teile[4], position);
                             }
                         }
                     }
