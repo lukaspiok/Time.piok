@@ -82,7 +82,13 @@ namespace Time.piok
                     Directory.CreateDirectory(@"C:\Time.piok");
                 File.Create(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
             }
-                           listview.ItemsSource = liste;   
+            if (File.Exists(@"C:\Time.piok\" + b.Name + "\\categories.xml"))
+            {
+                XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\categories.xml");
+                listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
+                read.Close();
+            }            
+            listview.ItemsSource = liste;   
                     CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
                         PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
                         view.GroupDescriptions.Add(groupDescription);
@@ -95,6 +101,7 @@ namespace Time.piok
                 kkk.Anfangsjahr = 0;
                 kkk.Endjahr = DateTime.Today.Year;
                 kkk.Name = "Standart";
+                kkk.Geschlecht = "Männlich und Weiblich";
                 listek.Add(kkk);
                 using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml"))
                 {
@@ -185,8 +192,9 @@ namespace Time.piok
             bool? result1 = k2.ShowDialog();
             if (result1 == true)
             {
-
-
+                XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml");
+                listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
+                read.Close();
             }
         }
 
@@ -374,7 +382,7 @@ namespace Time.piok
                                     if (int.TryParse(Teile[4], out sec))
                                         startzeit.AddSeconds(sec);
                                 }
-                                //test von Klaus
+
                                 Startzeit_zuweisen(startzeit.ToString(), position);
                             }
                         }
@@ -511,6 +519,28 @@ namespace Time.piok
             liste[position].Startzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Endzeit = TimeSpan.Parse("00:00:00.000000");
+        }
+        private void Abstand_ber()
+        {
+            Teilnehmer th = new Teilnehmer();
+            th.Rang = 1;
+            for (int i = 0; i < listek.Count; i++)
+            {
+                th.Klasse = listek[i].Name;
+                var q = liste.IndexOf(liste.Where(teil => teil.Rang == 1).FirstOrDefault());
+                int position = q;
+                if(position!=-1)
+                {
+                    for(int x = 0;x<liste.Count;x++)
+                    {
+                        if(liste[x].Klasse == th.Klasse)
+                        {
+                            if(liste[x].Status == "OK")
+                                liste[x].Abstand = liste[position].Endzeit - liste[x].Endzeit;
+                        }
+                    }
+                }
+            }
         }
         
         private void AlgeProtocol(string s)
@@ -667,6 +697,7 @@ namespace Time.piok
         {
             SortView();
             Rang_zuweisen();
+            Abstand_ber();
         }
 
         private void SortView()
@@ -724,5 +755,20 @@ namespace Time.piok
                 }
             }
         }
+        private void btnklasszu_Click(object sender,RoutedEventArgs e)
+        {
+            for (int x = 0; x < listek.Count; x++)
+            {
+                for (int i = 0; i < liste.Count; i++)
+                {
+                    if(listek[x].Geschlecht == liste[i].Geschlecht)
+                    {
+                        if (liste[i].Geburtsjahr <= listek[x].Endjahr && liste[i].Geburtsjahr >= listek[x].Anfangsjahr)
+                            liste[i].Klasse = listek[x].Name;
+                    }
+                }
+            }
+        }
+        
     }
 }

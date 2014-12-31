@@ -20,7 +20,9 @@ namespace Time.piok
         DateTime startzeit;
         DateTime zielzeit;
         int rang;
+        int geburtsjahr;
         TimeSpan endzeit;
+        TimeSpan abstand;
         string loaded;
         string status;
         public string Vorname
@@ -34,6 +36,17 @@ namespace Time.piok
                 return vname;
             }
         }
+        public int Geburtsjahr
+        {
+            set
+            {
+                geburtsjahr = value;
+            }
+            get
+            {
+                return geburtsjahr;
+            }
+        }
         public string Nachname
         {
             set
@@ -45,6 +58,17 @@ namespace Time.piok
                 return nname;
             }
 
+        }
+        public TimeSpan Abstand
+        {
+            set
+            {
+                abstand = value;
+            }
+            get
+            {
+                return abstand;
+            }
         }
         public int Startnummer
         {
@@ -62,6 +86,7 @@ namespace Time.piok
             set
             {
                 klasse = value;
+                OnPropertyChanged("Klasse");
             }
             get
             {
@@ -142,5 +167,6 @@ namespace Time.piok
         {
             return Startnummer.Equals(other.Startnummer);
         }
+        
     }
 }

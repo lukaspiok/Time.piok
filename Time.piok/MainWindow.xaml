@@ -13,7 +13,7 @@
                     <GridViewColumn Header="Klasse" Width="130" DisplayMemberBinding="{Binding Path=Klasse}"/>
                     <GridViewColumn Header="Status" Width="40" DisplayMemberBinding="{Binding Path=Status}"/>
                     <GridViewColumn Header="Zeit" Width="100" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
-                    <GridViewColumn Header="Abstand" Width="60" DisplayMemberBinding="{Binding Path=Abstand}"/>
+                    <GridViewColumn Header="Abstand" Width="60" DisplayMemberBinding="{Binding Path=Abstand, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
                 </GridView>
             </ListView.View>
             <ListView.GroupStyle>
@@ -31,6 +31,7 @@
             <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
                 <MenuItem Name="btn_remove_comp" Header="Teilnehmer entfernen" Click="btn_remove_Click"/>
                 <MenuItem Name="btn_comp_excel" Header="Aus Exceldatei auslesen"  Click="btnexcel_Click"/>
+                <MenuItem Name="btn_klasszuordnen" Header="Den Klassen zuordnen" Click="btnklasszu_Click"/>
             </MenuItem>
             <MenuItem Name="btn_add_class" Header="Klassen verwalten" Click="btn_categories_Click"/>
             <MenuItem Name="btn_dsq" Header="DSQ" Click="btn_dsq_Click" />

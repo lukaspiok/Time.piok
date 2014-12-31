@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Time.piok.Kategoriehin"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Time.piok" Height="350" Width="550" ResizeMode="CanResizeWithGrip">
+        Title="Time.piok" Height="350" Width="550" ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
     <Grid>
         <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Margin="0,21,0.4,-0.2">
             <ListView.View>
