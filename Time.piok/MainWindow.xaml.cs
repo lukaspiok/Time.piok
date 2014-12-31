@@ -731,11 +731,11 @@ namespace Time.piok
             }
 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Filter = "Exceldateien (.csv, .csv)|*.csv;*.csv"; 
+            dlg.Filter = "Exceldateien (.csv)|*.csv;"; 
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
-                String[] values = File.ReadAllText(dlg.FileName).Split('\n');
+                String[] values = File.ReadAllText(dlg.FileName,Encoding.Default).Split('\n');
                 string[] strTmp;
                 int i = 0;
                 foreach(string str in values)
@@ -759,6 +759,7 @@ namespace Time.piok
                         t.Geschlecht = strTmp[3];
                         t.Geburtsjahr = Convert.ToInt16(strTmp[4]);
                         t.Klasse = "Standart";
+                        t.Status = "DNS";
                     }
                     catch (Exception ex)
                     {
