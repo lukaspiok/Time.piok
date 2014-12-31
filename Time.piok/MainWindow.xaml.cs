@@ -522,20 +522,25 @@ namespace Time.piok
         }
         private void Abstand_ber()
         {
+            int position = 0;
             Teilnehmer th = new Teilnehmer();
             th.Rang = 1;
             for (int i = 0; i < listek.Count; i++)
             {
                 th.Klasse = listek[i].Name;
-                var q = liste.IndexOf(liste.Where(teil => teil.Rang == 1).FirstOrDefault());
-                int position = q;
-                if(position!=-1)
+                position = 0;
+                do
                 {
-                    for(int x = 0;x<liste.Count;x++)
+                    position++;
+                } while (liste[position].Rang == 1 && liste[position].Klasse == th.Klasse);
+
+                for(int x = 0;x<liste.Count;x++)
+                {
+                    if (position != -1)
                     {
-                        if(liste[x].Klasse == th.Klasse)
+                        if (liste[x].Klasse == th.Klasse)
                         {
-                            if(liste[x].Status == "OK")
+                            if (liste[x].Status == "OK")
                                 liste[x].Abstand = liste[position].Endzeit - liste[x].Endzeit;
                         }
                     }
