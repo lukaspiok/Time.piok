@@ -157,12 +157,7 @@ namespace Time.piok
                 if (result == true)
                 {
                     liste.Add(t);
-
-                    using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
-                    {
-                        xs.Serialize(wr, liste);
-                        wr.Close();
-                    }
+                    writelist();
 
                 }
             }
@@ -177,6 +172,11 @@ namespace Time.piok
         private void btn_remove_Click(object sender, RoutedEventArgs e)
         {
             liste.Remove(listview.SelectedItem as Teilnehmer);
+            writelist();
+        }
+
+        private void writelist()
+        {
             using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
             {
                 xs.Serialize(wr, liste);
@@ -370,7 +370,7 @@ namespace Time.piok
                                     if (int.TryParse(Teile[4], out sec))
                                         zielzeit.AddSeconds(sec);
                                 }
-                                Zielzeit_zuweisen(zielzeit.ToString(), position);
+                                Zielzeit_zuweisen(Teile[4], position);
                             }
                             else if (Teile[3] == "1" || Teile[3] == "M1")
                             {
@@ -383,7 +383,7 @@ namespace Time.piok
                                         startzeit.AddSeconds(sec);
                                 }
 
-                                Startzeit_zuweisen(startzeit.ToString(), position);
+                                Startzeit_zuweisen(Teile[4], position);
                             }
                         }
                     }
