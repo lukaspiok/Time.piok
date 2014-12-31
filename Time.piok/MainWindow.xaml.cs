@@ -743,7 +743,8 @@ namespace Time.piok
                     t.Vorname = strTmp[1];
                     t.Nachname = strTmp[2];
                     t.Geschlecht = strTmp[3];
-                    t.Geschlecht = strTmp[4];
+                    t.Geburtsjahr = Convert.ToInt16(strTmp[4]);
+                    t.Klasse = "Standart";
 
                     liste.Add(t);
 
