@@ -27,10 +27,11 @@
             </ListView.GroupStyle>
         </ListView>
         <Menu Name="Menu" HorizontalAlignment="Left" Height="22" Margin="1,-1,0,0" VerticalAlignment="Top" Width="719">
-            <MenuItem Header="Teilnehmer verwalten">    
-            <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
+            <MenuItem Header="Teilnehmer verwalten">
+                <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
                 <MenuItem Name="btn_remove_comp" Header="Teilnehmer entfernen" Click="btn_remove_Click"/>
                 <MenuItem Name="btn_comp_excel" Header="Aus CSV-Datei einlesen"  Click="btnexcel_Click"/>
+                <MenuItem Name="btn_startnzuw" Header="Startnummern zufällig zuweisen" Click="btnstartauslos_Click"/>
                 <MenuItem Name="btn_klasszuordnen" Header="Den Klassen zuordnen" Click="btnklasszu_Click"/>
             </MenuItem>
             <MenuItem Name="btn_add_class" Header="Klassen verwalten" Click="btn_categories_Click"/>

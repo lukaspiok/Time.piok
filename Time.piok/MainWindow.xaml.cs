@@ -719,11 +719,22 @@ namespace Time.piok
                 wr.Close();
             }
         }
+        private void btnstartauslos_Click(object sender, RoutedEventArgs e)
+        {
+            int frei = 5;
+            MessageBoxResult dlR = MessageBox.Show("5 Startnummern freilassen zwischen den Klassen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if(dlR == MessageBoxResult.No)
+            {
+                frei = 0;
+            }
+
+
+        }
 
         private void btnexcel_Click(object sender, RoutedEventArgs e)
         {
             bool readWithStartNumber = false;
-            MessageBoxResult dlR = MessageBox.Show("Mit Startnummer einlesen", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult dlR = MessageBox.Show("Mit Startnummer einlesen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
             
             if (dlR == MessageBoxResult.Yes)
             {
@@ -793,6 +804,7 @@ namespace Time.piok
                     }
                 }
             }
+            MessageBox.Show("Alle Teilnehmer wurden den entsprechenden Klassen zugewiesen!");
         }
         
     }
