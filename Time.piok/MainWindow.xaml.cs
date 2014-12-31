@@ -734,6 +734,7 @@ namespace Time.piok
         private void btnexcel_Click(object sender, RoutedEventArgs e)
         {
             bool readWithStartNumber = false;
+            MessageBox.Show("Die CSV muss folgendes Format haben: \n 1.Spalte: Startnummer \n 2.Spalte: Vorname \n 3.Spalte: Nachname \n 4.Spalte: Geschlecht \n 5.Spalte: Jahrgang");
             MessageBoxResult dlR = MessageBox.Show("Mit Startnummer einlesen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
             
             if (dlR == MessageBoxResult.Yes)
