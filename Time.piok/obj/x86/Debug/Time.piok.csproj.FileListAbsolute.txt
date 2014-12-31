@@ -24,4 +24,3 @@ D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\x86\Debug\Time
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\x86\Debug\Time.piok.csproj.GenerateResource.Cache
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\x86\Debug\Time.piok.exe
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\x86\Debug\Time.piok.pdb
-D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\x86\Debug\Time.piok.csprojResolveAssemblyReference.cache

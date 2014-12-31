@@ -722,6 +722,14 @@ namespace Time.piok
 
         private void btnexcel_Click(object sender, RoutedEventArgs e)
         {
+            bool readWithStartNumber = false;
+            MessageBoxResult dlR = MessageBox.Show("Mit Startnummer einlesen", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            
+            if (dlR == MessageBoxResult.Yes)
+            {
+                readWithStartNumber = true;
+            }
+
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.Filter = "Exceldateien (.csv, .csv)|*.csv;*.csv"; 
             Nullable<bool> result = dlg.ShowDialog();
@@ -729,29 +737,44 @@ namespace Time.piok
             {
                 String[] values = File.ReadAllText(dlg.FileName).Split('\n');
                 string[] strTmp;
-
+                int i = 0;
                 foreach(string str in values)
                 {
+                    i++;
                     Teilnehmer t = new Teilnehmer();
 
                     strTmp = str.Split(';');
 
                     if (strTmp[0] == "")
                         break;
-
-                    t.Startnummer = Convert.ToInt16(strTmp[0]);
-                    t.Vorname = strTmp[1];
-                    t.Nachname = strTmp[2];
-                    t.Geschlecht = strTmp[3];
-                    t.Geburtsjahr = Convert.ToInt16(strTmp[4]);
-                    t.Klasse = "Standart";
-
-                    liste.Add(t);
-
-                    using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
+                    try
                     {
-                        xs.Serialize(wr, liste);
-                        wr.Close();
+                        if (readWithStartNumber)
+                            t.Startnummer = Convert.ToInt16(strTmp[0]);
+                        else
+                            t.Startnummer = i;
+
+                        t.Vorname = strTmp[1];
+                        t.Nachname = strTmp[2];
+                        t.Geschlecht = strTmp[3];
+                        t.Geburtsjahr = Convert.ToInt16(strTmp[4]);
+                        t.Klasse = "Standart";
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    tt.Startnummer = t.Startnummer;
+                    int position = liste.IndexOf(tt);
+                    if (position == -1)
+                    {
+                        liste.Add(t);
+
+                        using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
+                        {
+                            xs.Serialize(wr, liste);
+                            wr.Close();
+                        }
                     }
                 }
             }
