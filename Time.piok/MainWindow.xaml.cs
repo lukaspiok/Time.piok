@@ -525,14 +525,22 @@ namespace Time.piok
             int position = 0;
             Teilnehmer th = new Teilnehmer();
             th.Rang = 1;
+            if (liste.Count <= 0)
+                return;
+
             for (int i = 0; i < listek.Count; i++)
             {
                 th.Klasse = listek[i].Name;
                 position = 0;
-                do
+
+                for (int q = 0; q < liste.Count; q++ )
                 {
-                    position++;
-                } while (liste[position].Rang == 1 && liste[position].Klasse == th.Klasse);
+                    if (liste[q].Rang == 1 && liste[q].Klasse == th.Klasse)
+                    {
+                        position = q;
+                        break;
+                    }
+                }
 
                 for(int x = 0;x<liste.Count;x++)
                 {
