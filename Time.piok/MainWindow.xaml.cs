@@ -154,12 +154,7 @@ namespace Time.piok
                 if (result == true)
                 {
                     liste.Add(t);
-
-                    using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
-                    {
-                        xs.Serialize(wr, liste);
-                        wr.Close();
-                    }
+                    writelist();
 
                 }
             }
@@ -174,6 +169,11 @@ namespace Time.piok
         private void btn_remove_Click(object sender, RoutedEventArgs e)
         {
             liste.Remove(listview.SelectedItem as Teilnehmer);
+            writelist();
+        }
+
+        private void writelist()
+        {
             using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\competitors.xml"))
             {
                 xs.Serialize(wr, liste);
