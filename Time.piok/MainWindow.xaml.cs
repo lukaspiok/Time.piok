@@ -525,6 +525,8 @@ namespace Time.piok
             int position = 0;
             Teilnehmer th = new Teilnehmer();
             th.Rang = 1;
+            if (liste.Count <= 0)
+                return;
             for (int i = 0; i < listek.Count; i++)
             {
                 th.Klasse = listek[i].Name;
