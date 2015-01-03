@@ -48,6 +48,7 @@ namespace Time.piok
         Bewerbe bewerb = new Bewerbe();
         SerialPort mySerialPort;
         string state;
+        Ladebalken lb = new Ladebalken();
         public MainWindow()
         {
             InitializeComponent();
@@ -275,17 +276,20 @@ namespace Time.piok
         private delegate void statelb(int wert, int max);
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            int length = 0;
+            int length = 0, toRead = 0; ;
             string indata;
-            //Dispatcher.Invoke(new calllb(call_lb));
+            Dispatcher.Invoke(new calllb(call_lb));
             char[] bytesread = new char[4096];
             System.Threading.Thread.Sleep(200);
             while (length < mySerialPort.BytesToRead+length)
             {
-                 bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
-                // Dispatcher.Invoke(new statelb(state_lb), length,mySerialPort.BytesToRead+length);
-                 System.Threading.Thread.Sleep(10);
-                 length++;
+                toRead = mySerialPort.ReadByte();
+                bytesread[length] = Convert.ToChar(toRead);
+
+                Dispatcher.Invoke(new statelb(state_lb),length, toRead);
+
+                System.Threading.Thread.Sleep(10);
+                length++;
             }
             indata = new string(bytesread,0,length);
             mySerialPort.DiscardInBuffer();
@@ -295,12 +299,10 @@ namespace Time.piok
        
         private void call_lb()
         {
-            Ladebalken lb = new Ladebalken();
             lb.Show();
         }
-        private void state_lb(int wert,int max)
+        private void state_lb(int wert, int max)
         {
-            Ladebalken lb = new Ladebalken();
             lb.Prog(wert, max);
         }
         private void serialread(string s)
