@@ -39,7 +39,7 @@ namespace Time.piok
             else
             {
                 cb_com.SelectedIndex = 1;
-                cb_baud.SelectedIndex = 2;
+                cb_baud.SelectedIndex = 3;
                 cb_com.Items.Remove(cb_com.SelectedItem = 0);
             }
         }

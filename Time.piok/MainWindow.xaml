@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Time.piok" Height="350" Width="720" ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
     <Grid>
-        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Margin="0,21,0.4,-0.2" Initialized="listview_Initialized">
+        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Margin="0,21,0.4,-0.2">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Startnr." Width="50" DisplayMemberBinding="{Binding Path=Startnummer}"/>

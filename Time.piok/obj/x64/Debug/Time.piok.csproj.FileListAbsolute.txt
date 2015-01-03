@@ -30,7 +30,6 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.pdb
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\bin\x64\Debug\Time.piok.exe
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\bin\x64\Debug\Time.piok.pdb
-Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csprojResolveAssemblyReference.cache
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Add_competition.baml
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Add_Kategorie.baml
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\DSQ.baml
@@ -52,3 +51,6 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.g.resources
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.Properties.Resources.resources
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csproj.GenerateResource.Cache
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csprojResolveAssemblyReference.cache
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Ladebalken.baml
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Ladebalken.g.cs

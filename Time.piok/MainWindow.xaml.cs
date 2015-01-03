@@ -200,6 +200,7 @@ namespace Time.piok
 
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
+            keepalive = false;
             if (state != "Zeitnehmung starten")
             {
                 if(dev.Com == true)
@@ -221,10 +222,7 @@ namespace Time.piok
                 int position = liste.IndexOf(te);
                 if (position !=-1)
                 {
-                    liste[position].Status = "DSQ";
-                    liste[position].Startzeit = DateTime.Parse("00:00:00.00000");
-                    liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
-                    liste[position].Endzeit = liste[position].Startzeit - liste[position].Zielzeit;
+                    DSQ_COMP(position);
                 }
             }
         }
@@ -232,7 +230,7 @@ namespace Time.piok
         private void btn_starttiming_Click(object sender, RoutedEventArgs e)
         {
             state = btn_starttiming.Header.ToString();
-            if (state == "Zeitnehmung starten")
+            if(state == "Zeitnehmung starten")
             {
                 if (dev.Ethernet == true)
                 {
@@ -247,97 +245,117 @@ namespace Time.piok
                 {
                     btn_starttiming.Header = "Zeitnehmung stoppen";
                     state = "Zeitnehmung stoppen";
-                    mySerialPort = new SerialPort(dev.ComPort);
-                    mySerialPort.BaudRate = dev.ComBaud;
-                    mySerialPort.Parity = Parity.None;
-                    mySerialPort.StopBits = StopBits.One;
-                    mySerialPort.DataBits = 8;
+                    mySerialPort = new SerialPort(dev.ComPort,dev.ComBaud,Parity.None,8,StopBits.One);
+                   // mySerialPort.ReadTimeout = 250;
                     mySerialPort.Handshake = Handshake.None;
                     mySerialPort.Open();
                     mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                }
+               }
             }
             else
             {
                 if (dev.Ethernet == true)
                 {
                     keepalive = false;
+                    System.Threading.Thread.Sleep(100);
                     sock.Close();
                     btn_starttiming.Header = "Zeitnehmung starten";
-                    state = "Zeitnehmung starten";
+                   
                 }
                 else if (dev.Com == true)
                 {
+                    keepalive = false;
                     mySerialPort.Close();
                     btn_starttiming.Header = "Zeitnehmung starten";
-                    state = "Zeitnehmung starten";
                 }
             }
         }
         private delegate void readHandler(string s);
-
+        private delegate void calllb();
+        private delegate void statelb(int wert, int max);
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort sp = (SerialPort)sender;
-            System.Threading.Thread.Sleep(80);
-            string indata = sp.ReadExisting();
+            int length = 0;
+            string indata;
+            //Dispatcher.Invoke(new calllb(call_lb));
+            char[] bytesread = new char[4096];
+            System.Threading.Thread.Sleep(200);
+            while (length < mySerialPort.BytesToRead+length)
+            {
+                 bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
+                // Dispatcher.Invoke(new statelb(state_lb), length,mySerialPort.BytesToRead+length);
+                 System.Threading.Thread.Sleep(10);
+                 length++;
+            }
+            indata = new string(bytesread,0,length);
+            mySerialPort.DiscardInBuffer();
             Dispatcher.Invoke(new readHandler(serialread), indata);
-           
+         
+        }
+       
+        private void call_lb()
+        {
+            Ladebalken lb = new Ladebalken();
+            lb.Show();
+        }
+        private void state_lb(int wert,int max)
+        {
+            Ladebalken lb = new Ladebalken();
+            lb.Prog(wert, max);
         }
         private void serialread(string s)
         {
             if (dev.Type == "Alge TdC 8001")
                 AlgeProtocol(s);
-            
+
             else if (dev.Type == "Tag Heuer CP545")
                 TagHeuerProtocol(s);
-            
+
             else if (dev.Type == "Microgate Rei2")
             {
-                int iCount = 0, iLength = 0; ;
-                string strCutString = "", strCommand = "";
-                iCount = 0;
-                strCutString = s;
-                do
+                int iLength = 0; ;
+                string[] strCutString;
+                string strCommand = "";
+                strCutString = s.Split('\n');
+                for (int i = 0; i < strCutString.Length; i++)
                 {
-                    iCount++;
-                    iLength = strCutString.Length;
-
-                    if (iLength >= 52)
+                    strCutString[i] += '\n';
+                    do
                     {
-                        strCommand = strCutString;
-                        if (iLength > 52)
-                            strCommand = strCommand.Remove(52, strCommand.Length - 52);
+                        iLength = strCutString[i].Length;
 
-                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
-                            file.WriteLine(strCommand);
+                        if (iLength >= 52)
+                        {
+                            strCommand = strCutString[i];
+                            if (iLength > 52)
+                                strCommand = strCommand.Remove(52, strCommand.Length - 52);
 
-                        MicrogateProtocol(strCommand);
-                        strCutString = strCutString.Remove(0, 52);
-                    }
-                    else
-                        break;
+                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
+                                file.WriteLine(strCommand);
 
-                    if (iCount > 50)
-                    {
-                        MessageBox.Show("More than 50 commands send!", "Error",MessageBoxButton.OK);
-                        break;
-                    }
-                } while (iLength != 52);
+                            MicrogateProtocol(strCommand);
+                            strCutString[i] = strCutString[i].Remove(0, 52);
+                        }
+                        else
+                            break;
+                    } while (iLength != 52);
+                }
             }
         }
 
-
         private void TagHeuerProtocol(string s)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
+                file.WriteLine(s);
+
+            SplitLineTagHeuer(s);
+        }
+        private void TagHeuerProtocol_AusWertung(string s)
         {
             if (s.Contains("TN") || s.Contains("T-") || s.Contains("!N") || s.Contains("T+") || s.Contains("T="))
             {
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
-                {
-                    file.WriteLine(s);
                     string[] Teile = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     Teilnehmer tt = new Teilnehmer();
-                    Teilnehmer t0 = new Teilnehmer();
                     if (Teile[0] == "TN")
                     {
                         tt.Startnummer = int.Parse(Teile[1]);
@@ -433,16 +451,77 @@ namespace Time.piok
                             else if (Teile[3] == "M1" || Teile[3] == "1")
                             {
                                 Startzeit_zuweisen(Teile[4], position);
-
                             }
                         }
                     }
+                    else if (Teile[0] == "!N")
+                    {
+                        tt.Startnummer = int.Parse(Teile[1]);
+                        int position = liste.IndexOf(tt);
+                        if (position != -1)
+                        {
+                            if (Teile[4].Length != 14)
+                            {
+                                for (int i = 0; Teile[4].Length < 14; i++)
+                                {
+                                    if (Teile[4].Length == 5)
+                                    {
+                                        Teile[4] = "." + Teile[4];
+                                    }
+                                    if (Teile[4].Length == 8 || Teile[4].Length == 11)
+                                    {
+                                        Teile[4] = ":" + Teile[4];
+                                    }
+                                    Teile[4] = "0" + Teile[4];
+                                }
 
-                }
+                            }
+                            if (Teile[3] == "M4" || Teile[3] == "4")
+                            {
+                                DateTime zielzeit;
+                                if (!DateTime.TryParse(Teile[4], out zielzeit))
+                                {
+                                    int sec;
+                                    zielzeit = new DateTime();
+                                    if (int.TryParse(Teile[4], out sec))
+                                        zielzeit.AddSeconds(sec);
+                                }
+                                Zielzeit_zuweisen(Teile[4], position);
+                            }
+                            else if (Teile[3] == "1" || Teile[3] == "M1")
+                            {
+                                DateTime startzeit;
+                                if (!DateTime.TryParse(Teile[4], out startzeit))
+                                {
+                                    int sec;
+                                    startzeit = new DateTime();
+                                    if (int.TryParse(Teile[4], out sec))
+                                        startzeit.AddSeconds(sec);
+                                }
 
+                                Startzeit_zuweisen(Teile[4], position);
+                            }
+                        }
+
+                    }
             }
         }
+        private void SplitLineTagHeuer(string s)
+        {
+            string strLine;
+            string strTmp;
+            int index;
 
+            strTmp = s;
+            index = strTmp.IndexOf("\n");
+            if (s.Length < 5 || index <= 0)
+                return;
+
+            strLine = strTmp.Remove(index, strTmp.Length - index);
+            TagHeuerProtocol_AusWertung(strLine);
+            s = s.Remove(0, s.IndexOf("\n") + 1);
+            SplitLineTagHeuer(s);
+        }
         private void ClearZiel(int position)
         {
             liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
@@ -531,10 +610,15 @@ namespace Time.piok
             {
                 th.Klasse = listek[i].Name;
                 position = 0;
-                do
+
+                for (int q = 0; q < liste.Count; q++ )
                 {
-                    position++;
-                } while (liste[position].Rang == 1 && liste[position].Klasse == th.Klasse);
+                    if (liste[q].Rang == 1 && liste[q].Klasse == th.Klasse)
+                    {
+                        position = q;
+                        break;
+                    }
+                }
 
                 for(int x = 0;x<liste.Count;x++)
                 {
@@ -555,10 +639,10 @@ namespace Time.piok
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
                 file.WriteLine(s);
 
-            SplitLine(s);
+            SplitLineAlge(s);
         }
 
-        private bool IsLineValid(string s)
+        private bool IsLineValidAlge(string s)
         {
             bool result;
             Regex myPattern = new Regex("[0-9]{4} [A-Z]");
@@ -567,7 +651,7 @@ namespace Time.piok
             return result;
         }
 
-        private void SplitLine(string s)
+        private void SplitLineAlge(string s)
         {
             string strLine;
             string strTmp;
@@ -581,12 +665,12 @@ namespace Time.piok
 
             strLine = strTmp.Remove(index, strTmp.Length - index);
 
-            if (IsLineValid(strLine))
+            if (IsLineValidAlge(strLine))
                 AlgeProtkoll_auswertung(strLine);
 
             s = s.Remove(0, s.IndexOf("\r")+1);
 
-            SplitLine(s);
+            SplitLineAlge(s);
         }
 
         private void AlgeProtkoll_auswertung(string s)
@@ -678,7 +762,7 @@ namespace Time.piok
         private void receive(string s)
         {
             if (dev.Type == "Tag Heuer CP545")
-                TagHeuerProtocol(s);
+                TagHeuerProtocol_AusWertung(s);
         }
         private void btn_settings_Click(object sender, RoutedEventArgs e)
         {
@@ -696,10 +780,7 @@ namespace Time.piok
             }
         }
 
-        private void listview_Initialized(object sender, EventArgs e)
-        {
-
-        }
+       
         public  void  timer_Tick(object sender, EventArgs e)
         {
             SortView();

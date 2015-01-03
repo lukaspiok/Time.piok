@@ -19,11 +19,14 @@
         </ComboBox>
         <Label Content="Baudrate" HorizontalAlignment="Left" Height="29" Margin="10,103,0,0" VerticalAlignment="Top" Width="90"/>
         <ComboBox Name="cb_baud" HorizontalAlignment="Left" Height="29" Margin="155,103,0,0" VerticalAlignment="Top" Width="117">
+            <ComboBoxItem Content="1200"/>
             <ComboBoxItem Content="2400"/>
             <ComboBoxItem Content="4800"/>
             <ComboBoxItem Content="9600"/>
             <ComboBoxItem Content="19200"/>
             <ComboBoxItem Content="38400"/>
+            <ComboBoxItem Content="57600"/>
+            <ComboBoxItem Content="115200"/>
         </ComboBox>
 
     </Grid>
