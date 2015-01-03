@@ -286,7 +286,7 @@ namespace Time.piok
                 toRead = mySerialPort.ReadByte();
                 bytesread[length] = Convert.ToChar(toRead);
 
-                Dispatcher.Invoke(new statelb(state_lb),length, toRead);
+                Dispatcher.Invoke(new statelb(state_lb),length, toRead+length);
 
                 System.Threading.Thread.Sleep(10);
                 length++;
