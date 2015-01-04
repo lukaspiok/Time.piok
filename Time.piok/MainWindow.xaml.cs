@@ -56,7 +56,6 @@ namespace Time.piok
            bool? result1 = k2.ShowDialog();
            if (result1 == true)
            {
-               MessageBox.Show(b.Name + " wurde erfolgreich geladen");
                bewerb.Name = b.Name;
                lbl_geladen.Content = b.Name;
            }
@@ -65,52 +64,64 @@ namespace Time.piok
                MessageBox.Show("Kein Bewerb gewählt, Programm wird geschlossen!");
                this.Close();
            }
-            if (File.Exists(@"C:\Time.piok\" + b.Name + "\\competitors.xml"))
-            {
-                if (new FileInfo(@"C:\Time.piok\" + b.Name + "\\competitors.xml").Length != 0)
-                {
-                    XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
-                    liste = xs.Deserialize(read) as ObservableCollection<Teilnehmer>;
-                    read.Close();
-                }
-            }
-            else
-            {
-                if (!Directory.Exists(@"C:\Time.piok"))
-                    Directory.CreateDirectory(@"C:\Time.piok");
-                File.Create(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
-            }
-            if (File.Exists(@"C:\Time.piok\" + b.Name + "\\categories.xml"))
-            {
-                XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\categories.xml");
-                listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
-                read.Close();
-            }            
-            listview.ItemsSource = liste;   
-                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
-                        PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
-                        view.GroupDescriptions.Add(groupDescription);
-            ansicht = CollectionViewSource.GetDefaultView(liste);
-            SortView();
-            Rang_zuweisen();
-            if(listek.Count == 0)
-            {
-                Kategorien kkk = new Kategorien();
-                kkk.Anfangsjahr = 0;
-                kkk.Endjahr = DateTime.Today.Year;
-                kkk.Name = "Standart";
-                kkk.Geschlecht = "Männlich und Weiblich";
-                listek.Add(kkk);
-                using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml"))
-                {
-                    xsk.Serialize(wr, listek);
-                    wr.Close();
-                }
-            }
-            timer = new DispatcherTimer();
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Interval = TimeSpan.FromMilliseconds(500);
-            timer.Start();       
+           if (b.Name != null)
+           {
+               try
+               {
+                   if (File.Exists(@"C:\Time.piok\" + b.Name + "\\competitors.xml"))
+                   {
+                       if (new FileInfo(@"C:\Time.piok\" + b.Name + "\\competitors.xml").Length != 0)
+                       {
+                           XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
+                           liste = xs.Deserialize(read) as ObservableCollection<Teilnehmer>;
+                           read.Close();
+                       }
+                   }
+                   else
+                   {
+                       if (!Directory.Exists(@"C:\Time.piok"))
+                           Directory.CreateDirectory(@"C:\Time.piok");
+                       File.Create(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
+                   }
+                   if (File.Exists(@"C:\Time.piok\" + b.Name + "\\categories.xml"))
+                   {
+                       XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\categories.xml");
+                       listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
+                       read.Close();
+                   }
+                   listview.ItemsSource = liste;
+                   CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
+                   PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
+                   view.GroupDescriptions.Add(groupDescription);
+                   ansicht = CollectionViewSource.GetDefaultView(liste);
+                   SortView();
+                   Rang_zuweisen();
+                   if (listek.Count == 0)
+                   {
+                       Kategorien kkk = new Kategorien();
+                       kkk.Anfangsjahr = 0;
+                       kkk.Endjahr = DateTime.Today.Year;
+                       kkk.Name = "Standart";
+                       kkk.Geschlecht = "Männlich und Weiblich";
+                       listek.Add(kkk);
+                       using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml"))
+                       {
+                           xsk.Serialize(wr, listek);
+                           wr.Close();
+                       }
+                   }
+                   timer = new DispatcherTimer();
+                   timer.Tick += new EventHandler(timer_Tick);
+                   timer.Interval = TimeSpan.FromMilliseconds(500);
+                   timer.Start();
+                   MessageBox.Show(b.Name + " wurde erfolgreich geladen");
+               }
+               catch(Exception ex)
+               {
+                   MessageBox.Show(ex.Message);
+               }
+           }
+       
         }
 
         private void Rang_zuweisen()

@@ -13,7 +13,7 @@
         <Label Content="Geschlecht" HorizontalAlignment="Left" Margin="27,134,0,0" VerticalAlignment="Top"/>
         <TextBox Name="txt_von" HorizontalAlignment="Left" Height="23" Margin="138,75,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155"/>
         <TextBox Name="txt_bis" HorizontalAlignment="Left" Height="23" Margin="138,107,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155"/>
-        <TextBox Name="vname_txt" HorizontalAlignment="Left" Height="23" Margin="138,43,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
+        <TextBox Name="kname_txt" HorizontalAlignment="Left" Height="23" Margin="138,43,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
         <Button  Name="btn_add" Content="Hinzufügen" HorizontalAlignment="Left" Height="59" Margin="27,201,0,0" VerticalAlignment="Top" Width="436" Click="btn_add_Click"/>
 
     </Grid>

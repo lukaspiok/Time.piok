@@ -47,16 +47,20 @@ namespace Time.piok
 
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
-          
-            Teilnehmer.Nachname = name_txt.Text;
-            Teilnehmer.Vorname = vname_txt.Text;
-            Teilnehmer.Startnummer = int.Parse(stnr_txt.Text);
-            Teilnehmer.Geburtsjahr = int.Parse(txt_jahr.Text);
-            ComboBoxItem typeItem = (ComboBoxItem)cb_ges.SelectedItem;
-            Teilnehmer.Geschlecht = typeItem.Content.ToString();
-            Teilnehmer.Klasse = cb_cat.SelectedItem.ToString(); ;
-            Teilnehmer.Status = "DNS";
-            this.DialogResult = true;
+            if (name_txt.Text != "" && vname_txt.Text != "" && stnr_txt.Text != "" && txt_jahr.Text != "")
+            {
+                Teilnehmer.Nachname = name_txt.Text;
+                Teilnehmer.Vorname = vname_txt.Text;
+                Teilnehmer.Startnummer = int.Parse(stnr_txt.Text);
+                Teilnehmer.Geburtsjahr = int.Parse(txt_jahr.Text);
+                ComboBoxItem typeItem = (ComboBoxItem)cb_ges.SelectedItem;
+                Teilnehmer.Geschlecht = typeItem.Content.ToString();
+                Teilnehmer.Klasse = cb_cat.SelectedItem.ToString(); ;
+                Teilnehmer.Status = "DNS";
+                this.DialogResult = true;
+            }
+            else
+                MessageBox.Show("Keine Textfelder dürfen leer sein!!");
         }
     }
 }

@@ -30,12 +30,17 @@ namespace Time.piok
 
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
-            kategorien.Anfangsjahr = int.Parse(txt_von.Text);
-            kategorien.Endjahr = int.Parse(txt_bis.Text);
-            ComboBoxItem typeItem = (ComboBoxItem)cb.SelectedItem;
-            kategorien.Geschlecht = typeItem.Content.ToString();
-            kategorien.Name = vname_txt.Text;
-            this.DialogResult = true;
+            if (txt_bis.Text != "" && txt_von.Text != "" && kname_txt.Text != "")
+            {
+                kategorien.Anfangsjahr = int.Parse(txt_von.Text);
+                kategorien.Endjahr = int.Parse(txt_bis.Text);
+                ComboBoxItem typeItem = (ComboBoxItem)cb.SelectedItem;
+                kategorien.Geschlecht = typeItem.Content.ToString();
+                kategorien.Name = kname_txt.Text;
+                this.DialogResult = true;
+            }
+            else
+                MessageBox.Show("Alle Felder müssen ausgefüllt sein!");
         }
     }
 }
