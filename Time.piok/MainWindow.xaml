@@ -63,6 +63,9 @@
         </Menu>
         <StatusBar Grid.Row="2" >
             <ProgressBar Height="20" Width="200" Name="prgMain"/>
+            <Label Name="lbl_verbunden" Content="Nicht verbunden" Height="25" Width="270"/>
+            <Label Name="lbl_geladen" Content="" Height="25" Width="130"/>
+            <Label Content="© Lukas Piok" Height="25" Width="130"/>
         </StatusBar>
     </Grid>
 </Window>

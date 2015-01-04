@@ -108,9 +108,6 @@
       <DependentUpon>Kategorie.xaml</DependentUpon>
     </Compile>
     <Compile Include="Kategorien.cs" />
-    <Compile Include="Ladebalken.xaml.cs">
-      <DependentUpon>Ladebalken.xaml</DependentUpon>
-    </Compile>
     <Compile Include="load_competition.xaml.cs">
       <DependentUpon>load_competition.xaml</DependentUpon>
     </Compile>
@@ -134,10 +131,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Kategorie.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ladebalken.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

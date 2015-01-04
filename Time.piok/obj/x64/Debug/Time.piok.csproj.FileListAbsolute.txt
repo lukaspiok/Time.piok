@@ -52,5 +52,3 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.Properties.Resources.resources
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csproj.GenerateResource.Cache
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csprojResolveAssemblyReference.cache
-Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Ladebalken.baml
-Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Ladebalken.g.cs

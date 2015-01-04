@@ -42,10 +42,10 @@ namespace Time.piok
         Device dev = new Device();
         Teilnehmer tt = new Teilnehmer();
         bool keepalive = true;
+        int wait;
         Bewerbe bewerb = new Bewerbe();
         SerialPort mySerialPort;
         string state;
-        Ladebalken lb = new Ladebalken();
         public MainWindow()
         {
             InitializeComponent();
@@ -58,7 +58,7 @@ namespace Time.piok
            {
                MessageBox.Show(b.Name + " wurde erfolgreich geladen");
                bewerb.Name = b.Name;
-
+               lbl_geladen.Content = b.Name;
            }
            else
            {
@@ -233,22 +233,36 @@ namespace Time.piok
                 if (dev.Ethernet == true)
                 {
                     sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    sock.Connect(new IPEndPoint(IPAddress.Parse(dev.IP), 7000));
+                    try
+                    {
+                        sock.Connect(new IPEndPoint(IPAddress.Parse(dev.IP), 7000));
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
+                    }
                     Thread clientService = new Thread(new ThreadStart(read));
                     clientService.Start();
                     btn_starttiming.Header = "Zeitnehmung stoppen";
                     state = "Zeitnehmung stoppen";
+                    lbl_verbunden.Content = "Verbunden: " + dev.Type + "," + dev.IP;
                 }
                 else if (dev.Com == true)
                 {
+                    mySerialPort = new SerialPort(dev.ComPort, dev.ComBaud, Parity.None, 8, StopBits.One);
+                    mySerialPort.Handshake = Handshake.None;
+                    try { mySerialPort.Open(); }
+                    catch (Exception ex) { MessageBox.Show(ex.Message);
+                    return;
+                    }
                     btn_starttiming.Header = "Zeitnehmung stoppen";
                     state = "Zeitnehmung stoppen";
-                    mySerialPort = new SerialPort(dev.ComPort,dev.ComBaud,Parity.None,8,StopBits.One);
-                   // mySerialPort.ReadTimeout = 250;
-                    mySerialPort.Handshake = Handshake.None;
-                    mySerialPort.Open();
+                    lbl_verbunden.Content = "Verbunden: " + dev.Type + "," + dev.ComPort + "," + dev.ComBaud.ToString();
                     mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-               }
+                }
+                else
+                    MessageBox.Show("Keine Einstellungen gewählt!!!");
             }
             else
             {
@@ -257,6 +271,7 @@ namespace Time.piok
                     keepalive = false;
                     System.Threading.Thread.Sleep(100);
                     sock.Close();
+                    lbl_verbunden.Content = "Nicht verbunden";
                     btn_starttiming.Header = "Zeitnehmung starten";
                    
                 }
@@ -264,6 +279,7 @@ namespace Time.piok
                 {
                     keepalive = false;
                     mySerialPort.Close();
+                    lbl_verbunden.Content = "Nicht verbunden";
                     btn_starttiming.Header = "Zeitnehmung starten";
                 }
             }
@@ -280,10 +296,8 @@ namespace Time.piok
             while (length < mySerialPort.BytesToRead+length)
             {
                 bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
-
                 Dispatcher.Invoke(new statelb(state_lb), length, mySerialPort.BytesToRead + length);
-
-                System.Threading.Thread.Sleep(10);
+                System.Threading.Thread.Sleep(wait);
                 length++;
             }
             Dispatcher.Invoke(new resetlb(reset_lb));
@@ -748,13 +762,21 @@ namespace Time.piok
         private void read()
         {
             keepalive = true;
-            while (keepalive)
+            try
             {
-                byte[] buffer = new byte[255];
-                int rec = sock.Receive(buffer);
-                Array.Resize(ref buffer, rec);
-                string s = Encoding.Default.GetString(buffer);
-                Dispatcher.Invoke(new readHandler(receive), s);
+                while (keepalive)
+                {
+                    byte[] buffer = new byte[255];
+                    int rec = sock.Receive(buffer);
+                    Array.Resize(ref buffer, rec);
+                    string s = Encoding.Default.GetString(buffer);
+                    Dispatcher.Invoke(new readHandler(receive), s);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
             }
         }
         private void receive(string s)
@@ -776,6 +798,16 @@ namespace Time.piok
                 dev.ComBaud = d.ComBaud;
                 dev.ComPort = d.ComPort;
             }
+            if (dev.ComBaud == 1200)
+                wait = 80;
+            if (dev.ComBaud == 2400)
+                wait = 40;
+            if (dev.ComBaud == 4800)
+                wait = 20;
+            if (dev.ComBaud == 9600)
+                wait = 10;
+            else
+                wait = 5;
         }
 
        
@@ -861,7 +893,7 @@ namespace Time.piok
                     }
                     catch (Exception ex)
                     {
-
+                        
                     }
                     tt.Startnummer = t.Startnummer;
                     int position = liste.IndexOf(tt);
