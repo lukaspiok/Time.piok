@@ -51,77 +51,77 @@ namespace Time.piok
             InitializeComponent();
             btn_starttiming.Header = "Zeitnehmung starten";
             state = btn_starttiming.Header.ToString();
-            Bewerbe b = new Bewerbe(); 
-           load_competition k2 = new load_competition(b);
-           bool? result1 = k2.ShowDialog();
-           if (result1 == true)
-           {
-               bewerb.Name = b.Name;
-               lbl_geladen.Content = b.Name;
-           }
-           else
-           {
-               MessageBox.Show("Kein Bewerb gewählt, Programm wird geschlossen!");
-               this.Close();
-           }
-           if (b.Name != null)
-           {
-               try
-               {
-                   if (File.Exists(@"C:\Time.piok\" + b.Name + "\\competitors.xml"))
-                   {
-                       if (new FileInfo(@"C:\Time.piok\" + b.Name + "\\competitors.xml").Length != 0)
-                       {
-                           XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
-                           liste = xs.Deserialize(read) as ObservableCollection<Teilnehmer>;
-                           read.Close();
-                       }
-                   }
-                   else
-                   {
-                       if (!Directory.Exists(@"C:\Time.piok"))
-                           Directory.CreateDirectory(@"C:\Time.piok");
-                       File.Create(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
-                   }
-                   if (File.Exists(@"C:\Time.piok\" + b.Name + "\\categories.xml"))
-                   {
-                       XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\categories.xml");
-                       listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
-                       read.Close();
-                   }
-                   listview.ItemsSource = liste;
-                   CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
-                   PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
-                   view.GroupDescriptions.Add(groupDescription);
-                   ansicht = CollectionViewSource.GetDefaultView(liste);
-                   SortView();
-                   Rang_zuweisen();
-                   if (listek.Count == 0)
-                   {
-                       Kategorien kkk = new Kategorien();
-                       kkk.Anfangsjahr = 0;
-                       kkk.Endjahr = DateTime.Today.Year;
-                       kkk.Name = "Standart";
-                       kkk.Geschlecht = "Männlich und Weiblich";
-                       listek.Add(kkk);
-                       using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml"))
-                       {
-                           xsk.Serialize(wr, listek);
-                           wr.Close();
-                       }
-                   }
-                   timer = new DispatcherTimer();
-                   timer.Tick += new EventHandler(timer_Tick);
-                   timer.Interval = TimeSpan.FromMilliseconds(500);
-                   timer.Start();
-                   MessageBox.Show(b.Name + " wurde erfolgreich geladen");
-               }
-               catch(Exception ex)
-               {
-                   MessageBox.Show(ex.Message);
-               }
-           }
-       
+            Bewerbe b = new Bewerbe();
+            load_competition k2 = new load_competition(b);
+            bool? result1 = k2.ShowDialog();
+            if (result1 == true)
+            {
+                bewerb.Name = b.Name;
+                lbl_geladen.Content = b.Name;
+            }
+            else
+            {
+                MessageBox.Show("Kein Bewerb gewählt, Programm wird geschlossen!");
+                this.Close();
+            }
+            if (b.Name != null)
+            {
+                try
+                {
+                    if (File.Exists(@"C:\Time.piok\" + b.Name + "\\competitors.xml"))
+                    {
+                        if (new FileInfo(@"C:\Time.piok\" + b.Name + "\\competitors.xml").Length != 0)
+                        {
+                            XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
+                            liste = xs.Deserialize(read) as ObservableCollection<Teilnehmer>;
+                            read.Close();
+                        }
+                    }
+                    else
+                    {
+                        if (!Directory.Exists(@"C:\Time.piok"))
+                            Directory.CreateDirectory(@"C:\Time.piok");
+                        File.Create(@"C:\Time.piok\" + b.Name + "\\competitors.xml");
+                    }
+                    if (File.Exists(@"C:\Time.piok\" + b.Name + "\\categories.xml"))
+                    {
+                        XmlTextReader read = new XmlTextReader(@"C:\Time.piok\" + b.Name + "\\categories.xml");
+                        listek = xsk.Deserialize(read) as ObservableCollection<Kategorien>;
+                        read.Close();
+                    }
+                    listview.ItemsSource = liste;
+                    CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
+                    PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
+                    view.GroupDescriptions.Add(groupDescription);
+                    ansicht = CollectionViewSource.GetDefaultView(liste);
+                    SortView();
+                    Rang_zuweisen();
+                    if (listek.Count == 0)
+                    {
+                        Kategorien kkk = new Kategorien();
+                        kkk.Anfangsjahr = 0;
+                        kkk.Endjahr = DateTime.Today.Year;
+                        kkk.Name = "Standart";
+                        kkk.Geschlecht = "Männlich und Weiblich";
+                        listek.Add(kkk);
+                        using (StreamWriter wr = new StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\categories.xml"))
+                        {
+                            xsk.Serialize(wr, listek);
+                            wr.Close();
+                        }
+                    }
+                    timer = new DispatcherTimer();
+                    timer.Tick += new EventHandler(timer_Tick);
+                    timer.Interval = TimeSpan.FromMilliseconds(500);
+                    timer.Start();
+                    MessageBox.Show(b.Name + " wurde erfolgreich geladen");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
         }
 
         private void Rang_zuweisen()
@@ -144,7 +144,7 @@ namespace Time.piok
                     else
                         t.Rang = i + 1;
                 }
-                for(int i = 0;i<liste.Count;i++)
+                for (int i = 0; i < liste.Count; i++)
                 {
                     if (liste[i].Status != "OK")
                         liste[i].Rang = 0;
@@ -212,11 +212,11 @@ namespace Time.piok
             keepalive = false;
             if (state != "Zeitnehmung starten")
             {
-                if(dev.Com == true)
+                if (dev.Com == true)
                     mySerialPort.Close();
-                
-                else if(dev.Ethernet==true)
-                  sock.Close();
+
+                else if (dev.Ethernet == true)
+                    sock.Close();
             }
             this.Close();
         }
@@ -229,7 +229,7 @@ namespace Time.piok
             if (result1 == true)
             {
                 int position = liste.IndexOf(te);
-                if (position !=-1)
+                if (position != -1)
                 {
                     DSQ_COMP(position);
                 }
@@ -239,7 +239,7 @@ namespace Time.piok
         private void btn_starttiming_Click(object sender, RoutedEventArgs e)
         {
             state = btn_starttiming.Header.ToString();
-            if(state == "Zeitnehmung starten")
+            if (state == "Zeitnehmung starten")
             {
                 if (dev.Ethernet == true)
                 {
@@ -248,7 +248,7 @@ namespace Time.piok
                     {
                         sock.Connect(new IPEndPoint(IPAddress.Parse(dev.IP), 7000));
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
                         return;
@@ -264,8 +264,10 @@ namespace Time.piok
                     mySerialPort = new SerialPort(dev.ComPort, dev.ComBaud, Parity.None, 8, StopBits.One);
                     mySerialPort.Handshake = Handshake.None;
                     try { mySerialPort.Open(); }
-                    catch (Exception ex) { MessageBox.Show(ex.Message);
-                    return;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
                     }
                     btn_starttiming.Header = "Zeitnehmung stoppen";
                     state = "Zeitnehmung stoppen";
@@ -284,7 +286,7 @@ namespace Time.piok
                     sock.Close();
                     lbl_verbunden.Content = "Nicht verbunden";
                     btn_starttiming.Header = "Zeitnehmung starten";
-                   
+
                 }
                 else if (dev.Com == true)
                 {
@@ -304,7 +306,7 @@ namespace Time.piok
             string indata;
             char[] bytesread = new char[4096];
             System.Threading.Thread.Sleep(200);
-            while (length < mySerialPort.BytesToRead+length)
+            while (length < mySerialPort.BytesToRead + length)
             {
                 bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
                 Dispatcher.Invoke(new statelb(state_lb), length, mySerialPort.BytesToRead + length);
@@ -312,10 +314,10 @@ namespace Time.piok
                 length++;
             }
             Dispatcher.Invoke(new resetlb(reset_lb));
-            indata = new string(bytesread,0,length);
+            indata = new string(bytesread, 0, length);
             mySerialPort.DiscardInBuffer();
             Dispatcher.Invoke(new readHandler(serialread), indata);
-         
+
         }
         private void state_lb(int wert, int max)
         {
@@ -377,156 +379,156 @@ namespace Time.piok
         {
             if (s.Contains("TN") || s.Contains("T-") || s.Contains("!N") || s.Contains("T+") || s.Contains("T="))
             {
-                    string[] Teile = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    Teilnehmer tt = new Teilnehmer();
-                    if (Teile[0] == "TN")
+                string[] Teile = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                Teilnehmer tt = new Teilnehmer();
+                if (Teile[0] == "TN")
+                {
+                    tt.Startnummer = int.Parse(Teile[1]);
+                    int position = liste.IndexOf(tt);
+                    if (position != -1)
                     {
-                        tt.Startnummer = int.Parse(Teile[1]);
-                        int position = liste.IndexOf(tt);
-                        if (position != -1)
+                        if (Teile[4].Length != 14)
                         {
-                            if (Teile[4].Length != 14)
+                            for (int i = 0; Teile[4].Length < 14; i++)
                             {
-                                for (int i = 0; Teile[4].Length < 14; i++)
+                                if (Teile[4].Length == 5)
                                 {
-                                    if (Teile[4].Length == 5)
-                                    {
-                                        Teile[4] = "." + Teile[4];
-                                    }
-                                    if (Teile[4].Length == 8 || Teile[4].Length == 11)
-                                    {
-                                        Teile[4] = ":" + Teile[4];
-                                    }
-                                    Teile[4] = "0" + Teile[4];
+                                    Teile[4] = "." + Teile[4];
                                 }
+                                if (Teile[4].Length == 8 || Teile[4].Length == 11)
+                                {
+                                    Teile[4] = ":" + Teile[4];
+                                }
+                                Teile[4] = "0" + Teile[4];
+                            }
 
-                            }
-                            if (Teile[3] == "M4" || Teile[3] == "4")
+                        }
+                        if (Teile[3] == "M4" || Teile[3] == "4")
+                        {
+                            DateTime zielzeit;
+                            if (!DateTime.TryParse(Teile[4], out zielzeit))
                             {
-                                DateTime zielzeit;
-                                if (!DateTime.TryParse(Teile[4], out zielzeit))
-                                {
-                                    int sec;
-                                    zielzeit = new DateTime();
-                                    if (int.TryParse(Teile[4], out sec))
-                                        zielzeit.AddSeconds(sec);
-                                }
-                                Zielzeit_zuweisen(Teile[4], position);
+                                int sec;
+                                zielzeit = new DateTime();
+                                if (int.TryParse(Teile[4], out sec))
+                                    zielzeit.AddSeconds(sec);
                             }
-                            else if (Teile[3] == "1" || Teile[3] == "M1")
+                            Zielzeit_zuweisen(Teile[4], position);
+                        }
+                        else if (Teile[3] == "1" || Teile[3] == "M1")
+                        {
+                            DateTime startzeit;
+                            if (!DateTime.TryParse(Teile[4], out startzeit))
                             {
-                                DateTime startzeit;
-                                if (!DateTime.TryParse(Teile[4], out startzeit))
-                                {
-                                    int sec;
-                                    startzeit = new DateTime();
-                                    if (int.TryParse(Teile[4], out sec))
-                                        startzeit.AddSeconds(sec);
-                                }
+                                int sec;
+                                startzeit = new DateTime();
+                                if (int.TryParse(Teile[4], out sec))
+                                    startzeit.AddSeconds(sec);
+                            }
 
-                                Startzeit_zuweisen(Teile[4], position);
-                            }
+                            Startzeit_zuweisen(Teile[4], position);
                         }
                     }
-                    else if (Teile[0].Contains("T-"))
+                }
+                else if (Teile[0].Contains("T-"))
+                {
+                    tt.Startnummer = int.Parse(Teile[1]);
+                    int position = liste.IndexOf(tt);
+                    if (position != -1)
                     {
-                        tt.Startnummer = int.Parse(Teile[1]);
-                        int position = liste.IndexOf(tt);
-                        if (position != -1)
+                        if (Teile[3] == "1" || Teile[3] == "M1")
                         {
-                            if (Teile[3] == "1" || Teile[3] == "M1")
+                            ClearStart(position);
+                        }
+                        else if (Teile[3] == "4" || Teile[3] == "M4")
+                        {
+                            ClearZiel(position);
+                        }
+                    }
+                }
+
+                else if (Teile[0].Contains("T+") || Teile[0].Contains("T="))
+                {
+                    tt.Startnummer = int.Parse(Teile[1]);
+                    int position = liste.IndexOf(tt);
+                    if (position != -1)
+                    {
+                        if (Teile[4].Length != 14)
+                        {
+                            for (int i = 0; Teile[4].Length < 14; i++)
                             {
-                                ClearStart(position);
+                                if (Teile[4].Length == 5)
+                                {
+                                    Teile[4] = "." + Teile[4];
+                                }
+                                if (Teile[4].Length == 8 || Teile[4].Length == 11)
+                                {
+                                    Teile[4] = ":" + Teile[4];
+                                }
+                                Teile[4] = "0" + Teile[4];
                             }
-                            else if (Teile[3] == "4" || Teile[3] == "M4")
+
+                        }
+                        if (Teile[3] == "M4" || Teile[3] == "4")
+                        {
+                            Zielzeit_zuweisen(Teile[4], position);
+                        }
+                        else if (Teile[3] == "M1" || Teile[3] == "1")
+                        {
+                            Startzeit_zuweisen(Teile[4], position);
+                        }
+                    }
+                }
+                else if (Teile[0] == "!N")
+                {
+                    tt.Startnummer = int.Parse(Teile[1]);
+                    int position = liste.IndexOf(tt);
+                    if (position != -1)
+                    {
+                        if (Teile[4].Length != 14)
+                        {
+                            for (int i = 0; Teile[4].Length < 14; i++)
                             {
-                                ClearZiel(position);
+                                if (Teile[4].Length == 5)
+                                {
+                                    Teile[4] = "." + Teile[4];
+                                }
+                                if (Teile[4].Length == 8 || Teile[4].Length == 11)
+                                {
+                                    Teile[4] = ":" + Teile[4];
+                                }
+                                Teile[4] = "0" + Teile[4];
                             }
+
+                        }
+                        if (Teile[3] == "M4" || Teile[3] == "4")
+                        {
+                            DateTime zielzeit;
+                            if (!DateTime.TryParse(Teile[4], out zielzeit))
+                            {
+                                int sec;
+                                zielzeit = new DateTime();
+                                if (int.TryParse(Teile[4], out sec))
+                                    zielzeit.AddSeconds(sec);
+                            }
+                            Zielzeit_zuweisen(Teile[4], position);
+                        }
+                        else if (Teile[3] == "1" || Teile[3] == "M1")
+                        {
+                            DateTime startzeit;
+                            if (!DateTime.TryParse(Teile[4], out startzeit))
+                            {
+                                int sec;
+                                startzeit = new DateTime();
+                                if (int.TryParse(Teile[4], out sec))
+                                    startzeit.AddSeconds(sec);
+                            }
+
+                            Startzeit_zuweisen(Teile[4], position);
                         }
                     }
 
-                    else if (Teile[0].Contains("T+") || Teile[0].Contains("T="))
-                    {
-                        tt.Startnummer = int.Parse(Teile[1]);
-                        int position = liste.IndexOf(tt);
-                        if (position != -1)
-                        {
-                            if (Teile[4].Length != 14)
-                            {
-                                for (int i = 0; Teile[4].Length < 14; i++)
-                                {
-                                    if (Teile[4].Length == 5)
-                                    {
-                                        Teile[4] = "." + Teile[4];
-                                    }
-                                    if (Teile[4].Length == 8 || Teile[4].Length == 11)
-                                    {
-                                        Teile[4] = ":" + Teile[4];
-                                    }
-                                    Teile[4] = "0" + Teile[4];
-                                }
-
-                            }
-                            if (Teile[3] == "M4" || Teile[3] == "4")
-                            {
-                                Zielzeit_zuweisen(Teile[4], position);
-                            }
-                            else if (Teile[3] == "M1" || Teile[3] == "1")
-                            {
-                                Startzeit_zuweisen(Teile[4], position);
-                            }
-                        }
-                    }
-                    else if (Teile[0] == "!N")
-                    {
-                        tt.Startnummer = int.Parse(Teile[1]);
-                        int position = liste.IndexOf(tt);
-                        if (position != -1)
-                        {
-                            if (Teile[4].Length != 14)
-                            {
-                                for (int i = 0; Teile[4].Length < 14; i++)
-                                {
-                                    if (Teile[4].Length == 5)
-                                    {
-                                        Teile[4] = "." + Teile[4];
-                                    }
-                                    if (Teile[4].Length == 8 || Teile[4].Length == 11)
-                                    {
-                                        Teile[4] = ":" + Teile[4];
-                                    }
-                                    Teile[4] = "0" + Teile[4];
-                                }
-
-                            }
-                            if (Teile[3] == "M4" || Teile[3] == "4")
-                            {
-                                DateTime zielzeit;
-                                if (!DateTime.TryParse(Teile[4], out zielzeit))
-                                {
-                                    int sec;
-                                    zielzeit = new DateTime();
-                                    if (int.TryParse(Teile[4], out sec))
-                                        zielzeit.AddSeconds(sec);
-                                }
-                                Zielzeit_zuweisen(Teile[4], position);
-                            }
-                            else if (Teile[3] == "1" || Teile[3] == "M1")
-                            {
-                                DateTime startzeit;
-                                if (!DateTime.TryParse(Teile[4], out startzeit))
-                                {
-                                    int sec;
-                                    startzeit = new DateTime();
-                                    if (int.TryParse(Teile[4], out sec))
-                                        startzeit.AddSeconds(sec);
-                                }
-
-                                Startzeit_zuweisen(Teile[4], position);
-                            }
-                        }
-
-                    }
+                }
             }
         }
         private void SplitLineTagHeuer(string s)
@@ -602,11 +604,11 @@ namespace Time.piok
                     }
                     else if (info == 'K')
                     {
-                        if(kanal == "315")
+                        if (kanal == "315")
                         {
                             Zielzeit_zuweisen(uhrzeit, position);
                         }
-                        else if(kanal == "300")
+                        else if (kanal == "300")
                         {
                             Startzeit_zuweisen(uhrzeit, position);
                         }
@@ -634,7 +636,7 @@ namespace Time.piok
                 th.Klasse = listek[i].Name;
                 position = 0;
 
-                for (int q = 0; q < liste.Count; q++ )
+                for (int q = 0; q < liste.Count; q++)
                 {
                     if (liste[q].Rang == 1 && liste[q].Klasse == th.Klasse)
                     {
@@ -643,7 +645,7 @@ namespace Time.piok
                     }
                 }
 
-                for(int x = 0;x<liste.Count;x++)
+                for (int x = 0; x < liste.Count; x++)
                 {
                     if (position != -1)
                     {
@@ -656,7 +658,7 @@ namespace Time.piok
                 }
             }
         }
-        
+
         private void AlgeProtocol(string s)
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
@@ -691,7 +693,7 @@ namespace Time.piok
             if (IsLineValidAlge(strLine))
                 AlgeProtkoll_auswertung(strLine);
 
-            s = s.Remove(0, s.IndexOf("\r")+1);
+            s = s.Remove(0, s.IndexOf("\r") + 1);
 
             SplitLineAlge(s);
         }
@@ -714,7 +716,7 @@ namespace Time.piok
                 int position = liste.IndexOf(tt);
                 if (position != -1)
                 {
-                    if(kanal == "RT " || kanal == "RTM")
+                    if (kanal == "RT " || kanal == "RTM")
                     {
                         liste[position].Status = "OK";
                         liste[position].Endzeit = TimeSpan.Parse(uhrzeit);
@@ -784,7 +786,7 @@ namespace Time.piok
                     Dispatcher.Invoke(new readHandler(receive), s);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return;
@@ -821,8 +823,8 @@ namespace Time.piok
                 wait = 5;
         }
 
-       
-        public  void  timer_Tick(object sender, EventArgs e)
+
+        public void timer_Tick(object sender, EventArgs e)
         {
             SortView();
             Rang_zuweisen();
@@ -848,16 +850,67 @@ namespace Time.piok
                 wr.Close();
             }
         }
+
+        private void SortList()
+        {
+            bool found = false;
+            int actualNumber = 0;
+            ObservableCollection<Teilnehmer> newTeilnemer = new ObservableCollection<Teilnehmer>();
+            newTeilnemer = liste;
+            do
+            {
+                for (int i = 0; i < liste.Count; i++)
+                {
+                    if(liste[i].Klasse)
+                    found = true;
+                }
+            } while (found);
+        }
+
         private void btnstartauslos_Click(object sender, RoutedEventArgs e)
         {
-            int frei = 5;
+            int frei = 0;
+            int anzteil = 0;
+            int oldanzteil = 0;
+            int iPos = 0;
+            Random r = new Random();
+            int actualNumber;
             MessageBoxResult dlR = MessageBox.Show("5 Startnummern freilassen zwischen den Klassen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if(dlR == MessageBoxResult.No)
+            if (dlR == MessageBoxResult.Yes)
             {
-                frei = 0;
+                frei = 9;
             }
 
+            bool[] taken = new bool[(frei * listek.Count) + liste.Count];
+            for (int z = 0; z < listek.Count; z++)
+            {
+                anzteil = 0;
+                for (int x = 0; x < liste.Count; x++)
+                {
+                    if (liste[x].Klasse == listek[z].Name)
+                    {
+                        anzteil++;
+                    }
+                }
+                for (int i = oldanzteil; i < (anzteil + oldanzteil)/*-(frei*z)*/; i++)
+                {
+                    if (anzteil <= 0)
+                        break;
+                    do
+                    {
+                        actualNumber = (r.Next(oldanzteil, anzteil + oldanzteil)) + 1;
+                    } while (taken[(actualNumber - 1)]);
+                    taken[(actualNumber - 1)] = true;
 
+                    //if (z != 0)
+                    //    liste[i - (z * frei)].RandomStartnummer = actualNumber;
+                    //else
+                    liste[/*i - ((z - 1) * frei)*/iPos].RandomStartnummer = actualNumber;
+                    iPos++;
+                }
+                if (anzteil > 0)
+                    oldanzteil = anzteil + frei;
+            }
         }
 
         private void btnexcel_Click(object sender, RoutedEventArgs e)
@@ -865,21 +918,21 @@ namespace Time.piok
             bool readWithStartNumber = false;
             MessageBox.Show("Die CSV muss folgendes Format haben: \n 1.Spalte: Startnummer \n 2.Spalte: Vorname \n 3.Spalte: Nachname \n 4.Spalte: Geschlecht \n 5.Spalte: Jahrgang");
             MessageBoxResult dlR = MessageBox.Show("Mit Startnummer einlesen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            
+
             if (dlR == MessageBoxResult.Yes)
             {
                 readWithStartNumber = true;
             }
 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Filter = "Exceldateien (.csv)|*.csv;"; 
+            dlg.Filter = "Exceldateien (.csv)|*.csv;";
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
-                String[] values = File.ReadAllText(dlg.FileName,Encoding.Default).Split('\n');
+                String[] values = File.ReadAllText(dlg.FileName, Encoding.Default).Split('\n');
                 string[] strTmp;
                 int i = 0;
-                foreach(string str in values)
+                foreach (string str in values)
                 {
                     i++;
                     Teilnehmer t = new Teilnehmer();
@@ -904,7 +957,7 @@ namespace Time.piok
                     }
                     catch (Exception ex)
                     {
-                        
+                        MessageBox.Show(ex.Message);
                     }
                     tt.Startnummer = t.Startnummer;
                     int position = liste.IndexOf(tt);
@@ -921,13 +974,13 @@ namespace Time.piok
                 }
             }
         }
-        private void btnklasszu_Click(object sender,RoutedEventArgs e)
+        private void btnklasszu_Click(object sender, RoutedEventArgs e)
         {
             for (int x = 0; x < listek.Count; x++)
             {
                 for (int i = 0; i < liste.Count; i++)
                 {
-                    if(listek[x].Geschlecht == liste[i].Geschlecht)
+                    if (listek[x].Geschlecht == liste[i].Geschlecht)
                     {
                         if (liste[i].Geburtsjahr <= listek[x].Endjahr && liste[i].Geburtsjahr >= listek[x].Anfangsjahr)
                             liste[i].Klasse = listek[x].Name;
@@ -936,6 +989,5 @@ namespace Time.piok
             }
             MessageBox.Show("Alle Teilnehmer wurden den entsprechenden Klassen zugewiesen!");
         }
-        
     }
 }

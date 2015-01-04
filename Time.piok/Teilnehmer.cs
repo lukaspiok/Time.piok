@@ -16,6 +16,7 @@ namespace Time.piok
         string nname;
         int startnummer;
         string klasse;
+        int idKlasse;
         string geschlecht;
         DateTime startzeit;
         DateTime zielzeit;
@@ -25,6 +26,12 @@ namespace Time.piok
         TimeSpan abstand;
         string loaded;
         string status;
+        int randStartnummer;
+        public int RandomStartnummer
+        {
+            set { randStartnummer = value; }
+            get { return randStartnummer; }
+        }
         public string Vorname
         {
             set
@@ -141,6 +148,11 @@ namespace Time.piok
         {
             set { zielzeit = value; }
             get { return zielzeit; }
+        }
+        public int ID
+        {
+            set { idKlasse = value; }
+            get { return idKlasse; }
         }
         public int Rang
         {

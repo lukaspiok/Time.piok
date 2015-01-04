@@ -11,6 +11,7 @@
         <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="RanStartnr." Width="50" DisplayMemberBinding="{Binding Path=RandomStartnummer}"/>
                     <GridViewColumn Header="Startnr." Width="50" DisplayMemberBinding="{Binding Path=Startnummer}"/>
                     <GridViewColumn Header="Rang" Width="50" DisplayMemberBinding="{Binding Path=Rang}"/>
                     <GridViewColumn Header="Vorname" Width="110" DisplayMemberBinding="{Binding Path=Vorname}"/>

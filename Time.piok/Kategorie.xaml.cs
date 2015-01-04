@@ -29,7 +29,7 @@ namespace Time.piok
         public Kategoriehin(Kategorien Kategorien)
         {
             InitializeComponent();
-           this.Kategorien = Kategorien;
+            this.Kategorien = Kategorien;
             if (File.Exists(@"C:\Time.piok\" + Kategorien.Loaded +"\\categories.xml"))
             {
                 if (new FileInfo(@"C:\Time.piok\" + Kategorien.Loaded +"\\categories.xml").Length != 0)

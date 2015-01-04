@@ -14,26 +14,38 @@ namespace Time.piok
         int jahrgangende;
         string geschlecht;
         string loaded;
-public string Name
+        int id;
+        public string Name
         {
-    set
+            set
             { name = value; }
             get { return name; }
         }
-    public int Anfangsjahr
-{
-    set { jahrganganfang=value;}
-    get { return jahrganganfang; }
-}
+        public int ID
+        {
+            set
+            {
+                id = value;
+            }
+            get
+            {
+                return id;
+            }
+        }
+        public int Anfangsjahr
+        {
+            set { jahrganganfang = value; }
+            get { return jahrganganfang; }
+        }
         public int Endjahr
-    {
-        set { jahrgangende = value; }
-            get {return jahrgangende;}
-    }
+        {
+            set { jahrgangende = value; }
+            get { return jahrgangende; }
+        }
         public string Geschlecht
         {
-            set { geschlecht = value;}
-            get {return geschlecht;}
+            set { geschlecht = value; }
+            get { return geschlecht; }
         }
         public string Loaded
         {
