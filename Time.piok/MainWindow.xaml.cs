@@ -23,9 +23,6 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
-using System.Data.OleDb;
-using System.Data;
-using System.Globalization;
 
 namespace Time.piok
 {
@@ -274,29 +271,33 @@ namespace Time.piok
         private delegate void readHandler(string s);
         private delegate void calllb();
         private delegate void statelb(int wert, int max);
+        private delegate void closelb();
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            int length = 0, toRead = 0; ;
+            int length = 0;
             string indata;
             Dispatcher.Invoke(new calllb(call_lb));
             char[] bytesread = new char[4096];
             System.Threading.Thread.Sleep(200);
             while (length < mySerialPort.BytesToRead+length)
             {
-                toRead = mySerialPort.ReadByte();
-                bytesread[length] = Convert.ToChar(toRead);
+                bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
 
-                Dispatcher.Invoke(new statelb(state_lb),length, toRead+length);
+                Dispatcher.Invoke(new statelb(state_lb), length, mySerialPort.BytesToRead + length);
 
                 System.Threading.Thread.Sleep(10);
                 length++;
             }
+            Dispatcher.Invoke(new closelb(close_lb));
             indata = new string(bytesread,0,length);
             mySerialPort.DiscardInBuffer();
             Dispatcher.Invoke(new readHandler(serialread), indata);
          
         }
-       
+       private void close_lb()
+        {
+            lb.myClose();
+        }
         private void call_lb()
         {
             lb.Show();

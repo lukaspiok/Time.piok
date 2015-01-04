@@ -22,13 +22,18 @@ namespace Time.piok
         public Ladebalken()
         {
             InitializeComponent();
-            
+           
         }
         public void Prog(int wert, int max)
         {
-           /**/ int tmp = 100/max;
-            prgbar.Value++;// = wert * tmp;
+            if (max >= 0)
+                prgbar.Value = wert * (100 / Convert.ToDouble(max));
             
+            
+        }
+        public void myClose()
+        {
+            this.Hide();
         }
     }
 }
