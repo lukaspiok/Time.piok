@@ -3,7 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Time.piok" Height="350" Width="720" ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
     <Grid>
-        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Margin="0,21,0.4,-0.2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Startnr." Width="50" DisplayMemberBinding="{Binding Path=Startnummer}"/>
@@ -41,7 +46,7 @@
                 </GroupStyle>
             </ListView.GroupStyle>
         </ListView>
-        <Menu Name="Menu" HorizontalAlignment="Left" Height="22" Margin="1,-1,0,0" VerticalAlignment="Top" Width="719">
+        <Menu Name="Menu">
             <MenuItem Header="Teilnehmer verwalten">
                 <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
                 <MenuItem Name="btn_remove_comp" Header="Teilnehmer entfernen" Click="btn_remove_Click"/>
@@ -55,6 +60,9 @@
             <MenuItem Name="btn_starttiming" Header="Zeitnehmung starten" Click="btn_starttiming_Click" />
             <MenuItem Name="btn_print" Header="Drucken"/>
             <MenuItem x:Name="btn_close" Header="Schliessen" Click="btn_close_Click"/>
-            </Menu>
+        </Menu>
+        <StatusBar Grid.Row="2" >
+            <ProgressBar Height="20" Width="200" Name="prgMain"/>
+        </StatusBar>
     </Grid>
 </Window>

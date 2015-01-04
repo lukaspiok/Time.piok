@@ -269,14 +269,12 @@ namespace Time.piok
             }
         }
         private delegate void readHandler(string s);
-        private delegate void calllb();
         private delegate void statelb(int wert, int max);
-        private delegate void closelb();
+        private delegate void resetlb();
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             int length = 0;
             string indata;
-            Dispatcher.Invoke(new calllb(call_lb));
             char[] bytesread = new char[4096];
             System.Threading.Thread.Sleep(200);
             while (length < mySerialPort.BytesToRead+length)
@@ -288,24 +286,21 @@ namespace Time.piok
                 System.Threading.Thread.Sleep(10);
                 length++;
             }
-            Dispatcher.Invoke(new closelb(close_lb));
+            Dispatcher.Invoke(new resetlb(reset_lb));
             indata = new string(bytesread,0,length);
             mySerialPort.DiscardInBuffer();
             Dispatcher.Invoke(new readHandler(serialread), indata);
          
         }
-       private void close_lb()
-        {
-            lb.myClose();
-        }
-        private void call_lb()
-        {
-            lb.Show();
-        }
         private void state_lb(int wert, int max)
         {
-            lb.Prog(wert, max);
+            prgMain.Value = wert * (100 / Convert.ToDouble(max));
         }
+        private void reset_lb()
+        {
+            prgMain.Value = 0;
+        }
+
         private void serialread(string s)
         {
             if (dev.Type == "Alge TdC 8001")
