@@ -126,6 +126,6 @@ D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Time.pio
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Time.piok.g.resources
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Time.piok.Properties.Resources.resources
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Time.piok.csproj.GenerateResource.Cache
-D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Ladebalken.baml
-D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Ladebalken.g.cs
 D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\Time.piok.csprojResolveAssemblyReference.cache
+D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\freilassen.baml
+D:\Users\Klaus\Documents\Programmieren\C#\Time.Piok\Time.piok\obj\Debug\freilassen.g.cs

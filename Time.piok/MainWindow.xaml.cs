@@ -855,15 +855,20 @@ namespace Time.piok
         {
             int pos = 0;
             ObservableCollection<Teilnehmer> newTeilnemer = new ObservableCollection<Teilnehmer>(liste);
-            //newTeilnemer = liste;
-
+            
             for (int q = 0; q < listek.Count; q++)
             {
                 for (int i = 0; i < liste.Count; i++)
                 {
                     if (liste[i].ID == listek[q].ID)
                     {
-                        newTeilnemer[pos] = liste[i];
+                        /// <summary>
+                        ///     Achtung!!!!!!   
+                        /// Hier eine änderung wegen null refference exception!!!!!!
+                        /// </summary>
+                        
+                        //newTeilnemer[pos] = liste[i];
+                        newTeilnemer.Add(liste[i]);
                         pos++;
                     }
                 }
@@ -879,10 +884,11 @@ namespace Time.piok
             int iPos = 0;
             Random r = new Random();
             int actualNumber;
-            freilassen fr = new freilassen(frei);
+            freilassen fr = new freilassen();
             bool? result = fr.ShowDialog();
             if(result == true)
             {
+                frei = fr.GetFei;
                 SortList();
                 bool[] taken = new bool[(frei * listek.Count) + liste.Count];
                 for (int z = 0; z < listek.Count; z++)

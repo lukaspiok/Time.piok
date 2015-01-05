@@ -20,10 +20,13 @@ namespace Time.piok
     public partial class freilassen : Window
     {
         int frei;
-        public freilassen(int frei)
+        public freilassen()
         {
             InitializeComponent();
-            this.frei = frei;
+        }
+        public int GetFei
+        {
+            get { return this.frei; }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
