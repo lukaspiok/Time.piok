@@ -862,13 +862,7 @@ namespace Time.piok
                 {
                     if (liste[i].ID == listek[q].ID)
                     {
-                        /// <summary>
-                        ///     Achtung!!!!!!   
-                        /// Hier eine änderung wegen null refference exception!!!!!!
-                        /// </summary>
-                        
-                        //newTeilnemer[pos] = liste[i];
-                        newTeilnemer.Add(liste[i]);
+                        newTeilnemer[pos] = liste[i];
                         pos++;
                     }
                 }
