@@ -853,64 +853,66 @@ namespace Time.piok
 
         private void SortList()
         {
-            bool found = false;
-            int actualNumber = 0;
-            ObservableCollection<Teilnehmer> newTeilnemer = new ObservableCollection<Teilnehmer>();
-            newTeilnemer = liste;
-            do
+            int pos = 0;
+            ObservableCollection<Teilnehmer> newTeilnemer = new ObservableCollection<Teilnehmer>(liste);
+            //newTeilnemer = liste;
+
+            for (int q = 0; q < listek.Count; q++)
             {
                 for (int i = 0; i < liste.Count; i++)
                 {
-                    if(liste[i].Klasse)
-                    found = true;
+                    if (liste[i].ID == listek[q].ID)
+                    {
+                        newTeilnemer[pos] = liste[i];
+                        pos++;
+                    }
                 }
-            } while (found);
+            }
+            liste = newTeilnemer;
         }
 
         private void btnstartauslos_Click(object sender, RoutedEventArgs e)
         {
-            int frei = 0;
+            int frei =0;
             int anzteil = 0;
             int oldanzteil = 0;
             int iPos = 0;
             Random r = new Random();
             int actualNumber;
-            MessageBoxResult dlR = MessageBox.Show("5 Startnummern freilassen zwischen den Klassen?", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (dlR == MessageBoxResult.Yes)
+            freilassen fr = new freilassen(frei);
+            bool? result = fr.ShowDialog();
+            if(result == true)
             {
-                frei = 9;
-            }
-
-            bool[] taken = new bool[(frei * listek.Count) + liste.Count];
-            for (int z = 0; z < listek.Count; z++)
-            {
-                anzteil = 0;
-                for (int x = 0; x < liste.Count; x++)
+                SortList();
+                bool[] taken = new bool[(frei * listek.Count) + liste.Count];
+                for (int z = 0; z < listek.Count; z++)
                 {
-                    if (liste[x].Klasse == listek[z].Name)
+                    anzteil = 0;
+                    for (int x = 0; x < liste.Count; x++)
                     {
-                        anzteil++;
+                        if (liste[x].Klasse == listek[z].Name)
+                        {
+                            anzteil++;
+                        }
                     }
-                }
-                for (int i = oldanzteil; i < (anzteil + oldanzteil)/*-(frei*z)*/; i++)
-                {
-                    if (anzteil <= 0)
-                        break;
-                    do
+                    for (int i = oldanzteil; i < (anzteil + oldanzteil); i++)
                     {
-                        actualNumber = (r.Next(oldanzteil, anzteil + oldanzteil)) + 1;
-                    } while (taken[(actualNumber - 1)]);
-                    taken[(actualNumber - 1)] = true;
-
-                    //if (z != 0)
-                    //    liste[i - (z * frei)].RandomStartnummer = actualNumber;
-                    //else
-                    liste[/*i - ((z - 1) * frei)*/iPos].RandomStartnummer = actualNumber;
-                    iPos++;
+                        if (anzteil <= 0)
+                            break;
+                        do
+                        {
+                            actualNumber = (r.Next(oldanzteil, anzteil + oldanzteil)) + 1;
+                        } while (taken[(actualNumber - 1)]);
+                        taken[(actualNumber - 1)] = true;
+                        //Randomstartnummer
+                        liste[iPos].Startnummer = actualNumber;
+                        iPos++;
+                    }
+                    if (anzteil > 0)
+                        oldanzteil = anzteil + frei + oldanzteil;
                 }
-                if (anzteil > 0)
-                    oldanzteil = anzteil + frei;
             }
+            
         }
 
         private void btnexcel_Click(object sender, RoutedEventArgs e)
@@ -983,7 +985,10 @@ namespace Time.piok
                     if (listek[x].Geschlecht == liste[i].Geschlecht)
                     {
                         if (liste[i].Geburtsjahr <= listek[x].Endjahr && liste[i].Geburtsjahr >= listek[x].Anfangsjahr)
+                        {
                             liste[i].Klasse = listek[x].Name;
+                            liste[i].ID     = listek[x].ID;
+                        }
                     }
                 }
             }

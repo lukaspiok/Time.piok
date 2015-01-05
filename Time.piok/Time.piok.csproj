@@ -104,6 +104,9 @@
     <Compile Include="DSQ.xaml.cs">
       <DependentUpon>DSQ.xaml</DependentUpon>
     </Compile>
+    <Compile Include="freilassen.xaml.cs">
+      <DependentUpon>freilassen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Kategorie.xaml.cs">
       <DependentUpon>Kategorie.xaml</DependentUpon>
     </Compile>
@@ -127,6 +130,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DSQ.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="freilassen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

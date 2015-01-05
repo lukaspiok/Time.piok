@@ -20,12 +20,13 @@ namespace Time.piok
     public partial class Add_Kategorie : Window
     {
         Kategorien kategorien;
-        public Add_Kategorie(Kategorien kategorien)
+        int countID;
+        public Add_Kategorie(Kategorien kategorien, int count)
         {
             InitializeComponent();
             this.kategorien = kategorien;
             cb.SelectedIndex = 0;
-
+            this.countID = count;
         }
 
         private void btn_add_Click(object sender, RoutedEventArgs e)
@@ -36,11 +37,17 @@ namespace Time.piok
                 kategorien.Endjahr = int.Parse(txt_bis.Text);
                 ComboBoxItem typeItem = (ComboBoxItem)cb.SelectedItem;
                 kategorien.Geschlecht = typeItem.Content.ToString();
+                kategorien.ID = Convert.ToInt16(txt_ID.Text);
                 kategorien.Name = kname_txt.Text;
                 this.DialogResult = true;
             }
             else
                 MessageBox.Show("Alle Felder müssen ausgefüllt sein!");
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            txt_ID.Text = countID.ToString();
         }
     }
 }

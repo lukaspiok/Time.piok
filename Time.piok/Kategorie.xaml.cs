@@ -61,7 +61,7 @@ namespace Time.piok
         private void btn_add_cat_Click(object sender, RoutedEventArgs e)
         {
             Kategorien k = new Kategorien();
-            Add_Kategorie k2 = new Add_Kategorie(k);
+            Add_Kategorie k2 = new Add_Kategorie(k, listek.Count);
             bool? result1 = k2.ShowDialog();
             if (result1 == true)
             {

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Time.piok.Add_Kategorie"
      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Teinehmer hinzufügen" Height="300" Width="512.538">
+        Title="Teinehmer hinzufügen" Height="300" Width="512.538" Loaded="Window_Loaded">
     <Grid Margin="0,0,4,0.4">
         <Label Content="Bezeichnung" HorizontalAlignment="Left" Height="28" Margin="27,38,0,0" VerticalAlignment="Top" Width="80"/>
         <Label Content="Jahrgang bis" HorizontalAlignment="Left" Height="28" Margin="27,104,0,0" VerticalAlignment="Top" Width="80"/>
@@ -15,6 +15,8 @@
         <TextBox Name="txt_bis" HorizontalAlignment="Left" Height="23" Margin="138,107,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155"/>
         <TextBox Name="kname_txt" HorizontalAlignment="Left" Height="23" Margin="138,43,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
         <Button  Name="btn_add" Content="Hinzufügen" HorizontalAlignment="Left" Height="59" Margin="27,201,0,0" VerticalAlignment="Top" Width="436" Click="btn_add_Click"/>
+        <Label Content="ID" HorizontalAlignment="Left" Height="28" Margin="27,160,0,0" VerticalAlignment="Top" Width="80"/>
+        <TextBox x:Name="txt_ID" HorizontalAlignment="Left" Height="23" Margin="138,163,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155" IsReadOnly="True"/>
 
     </Grid>
 </Window>

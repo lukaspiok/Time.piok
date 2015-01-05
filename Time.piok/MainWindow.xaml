@@ -11,15 +11,15 @@
         <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="RanStartnr." Width="50" DisplayMemberBinding="{Binding Path=RandomStartnummer}"/>
-                    <GridViewColumn Header="Startnr." Width="50" DisplayMemberBinding="{Binding Path=Startnummer}"/>
-                    <GridViewColumn Header="Rang" Width="50" DisplayMemberBinding="{Binding Path=Rang}"/>
-                    <GridViewColumn Header="Vorname" Width="110" DisplayMemberBinding="{Binding Path=Vorname}"/>
-                    <GridViewColumn Header="Nachname" Width="140" DisplayMemberBinding="{Binding Path=Nachname}"/>
-                    <GridViewColumn Header="Klasse" Width="130" DisplayMemberBinding="{Binding Path=Klasse}"/>
-                    <GridViewColumn Header="Status" Width="40" DisplayMemberBinding="{Binding Path=Status}"/>
-                    <GridViewColumn Header="Zeit" Width="100" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
-                    <GridViewColumn Header="Abstand" Width="60" DisplayMemberBinding="{Binding Path=Abstand, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                    <!--<GridViewColumn Header="RanStartnr." Width="50" DisplayMemberBinding="{Binding Path=RandomStartnummer}"/>-->
+                    <GridViewColumn Header="Startnr." Width="auto" DisplayMemberBinding="{Binding Path=Startnummer}"/>
+                    <GridViewColumn Header="Rang" Width="auto" DisplayMemberBinding="{Binding Path=Rang}"/>
+                    <GridViewColumn Header="Vorname" Width="auto" DisplayMemberBinding="{Binding Path=Vorname}"/>
+                    <GridViewColumn Header="Nachname" Width="auto" DisplayMemberBinding="{Binding Path=Nachname}"/>
+                    <GridViewColumn Header="Klasse" Width="auto" DisplayMemberBinding="{Binding Path=Klasse}"/>
+                    <GridViewColumn Header="Status" Width="auto" DisplayMemberBinding="{Binding Path=Status}"/>
+                    <GridViewColumn Header="Zeit" Width="auto" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                    <GridViewColumn Header="Abstand" Width="auto" DisplayMemberBinding="{Binding Path=Abstand, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
                 </GridView>
             </ListView.View>
             <ListView.GroupStyle>
@@ -33,8 +33,8 @@
                                             <Expander.Header>
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="22" VerticalAlignment="Bottom" />
-                                                    <TextBlock Text="{Binding ItemCount}" FontSize="22" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" VerticalAlignment="Bottom" />
-                                                    <TextBlock Text=" item(s)" FontSize="22" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
+                                                    <TextBlock Text="{Binding ItemCount}" FontSize="14" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                                    <TextBlock Text=" item(s)" FontSize="14" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
                                                 </StackPanel>
                                             </Expander.Header>
                                             <ItemsPresenter />
@@ -47,7 +47,7 @@
                 </GroupStyle>
             </ListView.GroupStyle>
         </ListView>
-        <Menu Name="Menu">
+        <Menu Name="Menu" Width="auto">
             <MenuItem Header="Teilnehmer verwalten">
                 <MenuItem Name="btn_add_comp" Header="Teilnehmer hinzufügen" Click="btn_add_Click"/>
                 <MenuItem Name="btn_remove_comp" Header="Teilnehmer entfernen" Click="btn_remove_Click"/>

@@ -10,6 +10,7 @@
                     <GridViewColumn Header="Von Jahr" Width="110" DisplayMemberBinding="{Binding Path=Anfangsjahr}"/>
                     <GridViewColumn Header="Bis Jahr" Width="140" DisplayMemberBinding="{Binding Path=Endjahr}"/>
                     <GridViewColumn Header="Geschlecht" Width="100" DisplayMemberBinding="{Binding Path=Geschlecht}"/>
+                    <GridViewColumn Header="ID" Width="30" DisplayMemberBinding="{Binding Path=ID}"/>
                 </GridView>
             </ListView.View>
         </ListView>
