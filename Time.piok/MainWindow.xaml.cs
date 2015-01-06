@@ -152,7 +152,6 @@ namespace Time.piok
 
             }
         }
-
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
             Teilnehmer t = new Teilnehmer();
@@ -221,21 +220,6 @@ namespace Time.piok
             this.Close();
         }
 
-        private void btn_dsq_Click(object sender, RoutedEventArgs e)
-        {
-            Teilnehmer te = new Teilnehmer();
-            DSQ dq = new DSQ(te);
-            bool? result1 = dq.ShowDialog();
-            if (result1 == true)
-            {
-                int position = liste.IndexOf(te);
-                if (position != -1)
-                {
-                    DSQ_COMP(position);
-                }
-            }
-        }
-
         private void btn_starttiming_Click(object sender, RoutedEventArgs e)
         {
             state = btn_starttiming.Header.ToString();
@@ -261,6 +245,8 @@ namespace Time.piok
                 }
                 else if (dev.Com == true)
                 {
+                    if (dev.Type == "Alge TdC 8001")
+                        btn_cont8001.IsEnabled = true;
                     mySerialPort = new SerialPort(dev.ComPort, dev.ComBaud, Parity.None, 8, StopBits.One);
                     mySerialPort.Handshake = Handshake.None;
                     try { mySerialPort.Open(); }
@@ -290,6 +276,7 @@ namespace Time.piok
                 }
                 else if (dev.Com == true)
                 {
+                    btn_cont8001.IsEnabled = false;
                     keepalive = false;
                     mySerialPort.Close();
                     lbl_verbunden.Content = "Nicht verbunden";
@@ -327,7 +314,7 @@ namespace Time.piok
         {
             prgMain.Value = 0;
         }
-
+        
         private void serialread(string s)
         {
             if (dev.Type == "Alge TdC 8001")
@@ -379,6 +366,7 @@ namespace Time.piok
         {
             if (s.Contains("TN") || s.Contains("T-") || s.Contains("!N") || s.Contains("T+") || s.Contains("T="))
             {
+                listb.Items.Add(s);
                 string[] Teile = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 Teilnehmer tt = new Teilnehmer();
                 if (Teile[0] == "TN")
@@ -564,6 +552,7 @@ namespace Time.piok
 
         private void MicrogateProtocol(string strCommand)
         {
+            listb.Items.Add(strCommand);
             char[] zeichen = strCommand.ToCharArray();
             string mode = zeichen[4].ToString() + zeichen[5].ToString();
             if (mode == "SO")
@@ -669,10 +658,12 @@ namespace Time.piok
 
         private bool IsLineValidAlge(string s)
         {
-            bool result;
+            bool result = false;
             Regex myPattern = new Regex("[0-9]{4} [A-Z]");
-
-            result = myPattern.IsMatch(s);
+            Regex Number = new Regex("n[0-9{4}]");
+            //result = myPattern.IsMatch(s);
+            if (Number.IsMatch(s) || myPattern.IsMatch(s))
+                result = true;
             return result;
         }
 
@@ -702,7 +693,7 @@ namespace Time.piok
         {
 
             char[] zeichen = s.ToCharArray();
-
+            listb.Items.Add(s);
             string startnummer = zeichen[1].ToString() + zeichen[2].ToString() + zeichen[3].ToString() + zeichen[4].ToString();
             if (zeichen[0] == ' ' || zeichen[0] == 'i')
             {
@@ -795,7 +786,7 @@ namespace Time.piok
         private void receive(string s)
         {
             if (dev.Type == "Tag Heuer CP545")
-                TagHeuerProtocol_AusWertung(s);
+                TagHeuerProtocol(s);
         }
         private void btn_settings_Click(object sender, RoutedEventArgs e)
         {
@@ -829,8 +820,26 @@ namespace Time.piok
             SortView();
             Rang_zuweisen();
             Abstand_ber();
+            Uhrzeit_ausgeben();
+            listb.ScrollIntoView(listb.Items[listb.Items.Count - 1]);
         }
 
+        private void Uhrzeit_ausgeben()
+        {
+            string uhr = "";
+            if (DateTime.Now.Hour < 10)
+                uhr += "0";
+            uhr += DateTime.Now.Hour.ToString();
+            uhr += ":";
+            if (DateTime.Now.Minute < 10)
+                uhr += "0";
+            uhr += DateTime.Now.Minute.ToString();
+            uhr += ":";
+            if (DateTime.Now.Second < 10)
+                uhr += "0";
+            uhr += DateTime.Now.Second.ToString();
+            lbl_uhrzeit.Content = uhr;
+        }
         private void SortView()
         {
             using (ansicht.DeferRefresh())
@@ -855,7 +864,7 @@ namespace Time.piok
         {
             int pos = 0;
             ObservableCollection<Teilnehmer> newTeilnemer = new ObservableCollection<Teilnehmer>(liste);
-            
+
             for (int q = 0; q < listek.Count; q++)
             {
                 for (int i = 0; i < liste.Count; i++)
@@ -872,7 +881,7 @@ namespace Time.piok
 
         private void btnstartauslos_Click(object sender, RoutedEventArgs e)
         {
-            int frei =0;
+            int frei = 0;
             int anzteil = 0;
             int oldanzteil = 0;
             int iPos = 0;
@@ -880,7 +889,7 @@ namespace Time.piok
             int actualNumber;
             freilassen fr = new freilassen();
             bool? result = fr.ShowDialog();
-            if(result == true)
+            if (result == true)
             {
                 frei = fr.GetFei;
                 SortList();
@@ -912,7 +921,7 @@ namespace Time.piok
                         oldanzteil = anzteil + frei + oldanzteil;
                 }
             }
-            
+
         }
 
         private void btnexcel_Click(object sender, RoutedEventArgs e)
@@ -987,12 +996,132 @@ namespace Time.piok
                         if (liste[i].Geburtsjahr <= listek[x].Endjahr && liste[i].Geburtsjahr >= listek[x].Anfangsjahr)
                         {
                             liste[i].Klasse = listek[x].Name;
-                            liste[i].ID     = listek[x].ID;
+                            liste[i].ID = listek[x].ID;
                         }
                     }
                 }
             }
             MessageBox.Show("Alle Teilnehmer wurden den entsprechenden Klassen zugewiesen!");
+        }
+
+        private void cb_status_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cb_status.SelectedIndex == 0)
+            {
+                txt_laufzeit.IsEnabled = true;
+                lbl_endzeit.IsEnabled = true;
+                txt_laufzeit.Text = "HH:MM:SS.ZH";
+            }
+            else
+            {
+                txt_laufzeit.IsEnabled = false;
+                lbl_endzeit.IsEnabled = false;
+                txt_laufzeit.Text = "";
+            }
+        }
+
+        private void OnKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                tt.Startnummer = int.Parse(txt_startn.Text);
+                int position = liste.IndexOf(tt);
+                if (position != -1)
+                {
+                    txt_startn.IsEnabled = false;
+                    btn_save.IsEnabled = true;
+                    lbl_vornach.IsEnabled = true;
+                    lbl_vornach.Content = liste[position].Nachname + "," + liste[position].Vorname;
+                    lbl_Kat.IsEnabled = true;
+                    lbl_Kat.Content = liste[position].Klasse;
+                    lbl_status.IsEnabled = true;
+                    cb_status.IsEnabled = true;
+                    if (liste[position].Status == "OK")
+                    {
+                        cb_status.SelectedIndex = 0;
+                        lbl_endzeit.IsEnabled = true;
+                        txt_laufzeit.IsEnabled = true;
+                        txt_laufzeit.Text = liste[position].Endzeit.ToString();
+                    }
+                    else if (liste[position].Status == "DNF")
+                        cb_status.SelectedIndex = 1;
+                    else if (liste[position].Status == "DNS")
+                        cb_status.SelectedIndex = 2;
+                    else if (liste[position].Status == "DSQ")
+                        cb_status.SelectedIndex = 3;
+
+                }
+            }
+        }
+        private void btn_save_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                tt.Startnummer = int.Parse(txt_startn.Text);
+                int position = liste.IndexOf(tt);
+                if (cb_status.SelectedIndex == 0)
+                {
+                    if (txt_laufzeit.Text != "")
+                    {
+                        liste[position].Endzeit = TimeSpan.Parse(txt_laufzeit.Text);
+                        liste[position].Status = "OK";
+                    }
+                }
+                else if (cb_status.SelectedIndex == 1)
+                {
+                    liste[position].Status = "DNF";
+                    liste[position].Endzeit = TimeSpan.Parse("00:00:00.00000");
+                }
+                else if (cb_status.SelectedIndex == 2)
+                {
+                    liste[position].Status = "DNS";
+                    liste[position].Endzeit = TimeSpan.Parse("00:00:00.00000");
+                }
+                else if (cb_status.SelectedIndex == 3)
+                {
+                    liste[position].Status = "DSQ";
+                    liste[position].Endzeit = TimeSpan.Parse("00:00:00.00000");
+                }
+                txt_laufzeit.Text = "";
+                txt_laufzeit.IsEnabled = false;
+                txt_startn.IsEnabled = true;
+                btn_save.IsEnabled = false;
+                lbl_vornach.IsEnabled = true;
+                lbl_vornach.Content = "Nachname,Vorname";
+                lbl_Kat.IsEnabled = false;
+                lbl_Kat.Content = "Kategorie";
+                lbl_status.IsEnabled = false;
+                cb_status.IsEnabled = false;
+                txt_startn.Text = "";
+                cb_status.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btn_callrt_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                mySerialPort.Write("CALRT\r");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btn_callc0_Click(object sender, RoutedEventArgs e)
+        {
+            try { mySerialPort.Write("PALST\r"); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+        private void btn_callc1_Click(object sender, RoutedEventArgs e)
+        {
+            try { mySerialPort.Write("PALFT\r"); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
     }
 }

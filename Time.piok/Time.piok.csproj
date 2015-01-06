@@ -101,9 +101,6 @@
     </Compile>
     <Compile Include="Bewerbe.cs" />
     <Compile Include="Device.cs" />
-    <Compile Include="DSQ.xaml.cs">
-      <DependentUpon>DSQ.xaml</DependentUpon>
-    </Compile>
     <Compile Include="freilassen.xaml.cs">
       <DependentUpon>freilassen.xaml</DependentUpon>
     </Compile>
@@ -126,10 +123,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Add_Kategorie.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DSQ.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -195,6 +188,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Download-42.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
