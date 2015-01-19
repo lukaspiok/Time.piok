@@ -12,6 +12,14 @@ namespace Time.piok
         int anz_laufe;
         string date;
         string bez;
+        int anz_mannschaft;
+        bool mannschaft;
+        string timeformat;
+        public string TimeFormat
+        {
+            set { timeformat = value; }
+            get { return timeformat; }
+        }
         public int Anzlauf
         {
             set { anz_laufe = value; }
@@ -26,6 +34,28 @@ namespace Time.piok
     {
         set { bez = value; }
         get { return bez; }
+    }
+        public bool Mannschaftwertung
+    {
+            set
+        {
+            mannschaft = value;
+        }
+            get
+        {
+            return mannschaft;
+        }
+    }
+        public int Anzahl_Mannschaft
+    {
+            set
+        {
+            anz_mannschaft = value;
+        }
+            get
+        {
+            return anz_mannschaft;
+        }
     }
     
     public event PropertyChangedEventHandler PropertyChanged;

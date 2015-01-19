@@ -52,3 +52,7 @@ Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Time.piok.csprojResolveAssemblyReference.cache
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\freilassen.baml
 Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\freilassen.g.cs
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Druckauswahl.baml
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\Druckauswahl.g.cs
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\settings_wertung.baml
+Z:\Daten Lukas\Dokumente\Visual Studio 2013\Projects\Time.piok\Time.piok\obj\x64\Debug\settings_wertung.g.cs

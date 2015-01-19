@@ -21,12 +21,55 @@ namespace Time.piok
         DateTime startzeit;
         DateTime zielzeit;
         int rang;
+        string mannschaft;
         int geburtsjahr;
         TimeSpan endzeit;
         TimeSpan abstand;
         string loaded;
         string status;
         int randStartnummer;
+        string status2;
+        TimeSpan lauf1;
+        TimeSpan lauf2;
+
+        public string Status2
+    {
+        set { status2 = value; }
+        get { return status2; }
+    }
+        [XmlIgnore]
+        public TimeSpan Lauf1
+        {
+            set { lauf1 = value;
+            OnPropertyChanged("Lauf1");
+            }
+            get { return lauf1; }
+        }
+        [XmlIgnore]
+        public TimeSpan Lauf2
+        {
+            set { lauf2 = value;
+            OnPropertyChanged("Lauf2");
+            }
+            get { return lauf2; }
+        }
+        [XmlAttribute(AttributeName = "Lauf1", DataType = "duration")]
+        public string XmlLauf1
+        {
+            get { return XmlConvert.ToString(lauf1); }
+            set { lauf1 = XmlConvert.ToTimeSpan(value); }
+        }
+        [XmlAttribute(AttributeName = "Lauf2", DataType = "duration")]
+        public string XmlEndzeit
+        {
+            get { return XmlConvert.ToString(lauf2); }
+            set { lauf2 = XmlConvert.ToTimeSpan(value); }
+        }
+        public string Mannschaft
+        { set { mannschaft = value; }
+          get { return mannschaft; }
+        }
+        [XmlIgnore]
         public int RandomStartnummer
         {
             set { randStartnummer = value; }
@@ -115,7 +158,7 @@ namespace Time.piok
             }
         }
         [XmlAttribute(AttributeName = "Endzeit", DataType = "duration")]
-        public string XmlEndzeit
+        public string XmlLauf2
         {
             get { return XmlConvert.ToString(endzeit); }
             set { endzeit = XmlConvert.ToTimeSpan(value); }

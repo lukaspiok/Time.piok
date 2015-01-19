@@ -4,21 +4,23 @@
         Title="Teinehmer hinzufügen" Height="300" Width="512.538">
     
     <Grid Margin="0,0,4,0.4">
-        <Label Content="Vorname" HorizontalAlignment="Left" Height="28" Margin="27,26,0,0" VerticalAlignment="Top" Width="80"/>
-        <Label Content="Startnummer" HorizontalAlignment="Left" Height="28" Margin="27,92,0,0" VerticalAlignment="Top" Width="80"/>
-        <Label Content="Nachname" HorizontalAlignment="Left" Height="28" Margin="27,59,0,0" VerticalAlignment="Top" Width="80"/>
+        <Label Content="Vorname" HorizontalAlignment="Left" Height="25" Margin="27,15,0,0" VerticalAlignment="Top" Width="80"/>
+        <Label Content="Startnummer" HorizontalAlignment="Left" Height="25" Margin="27,92,0,0" VerticalAlignment="Top" Width="80"/>
+        <Label Content="Nachname" HorizontalAlignment="Left" Height="25" Margin="27,38,0,0" VerticalAlignment="Top" Width="80"/>
         <ComboBox Name="cb_cat" HorizontalAlignment="Left" Height="25" Margin="138,171,0,0" VerticalAlignment="Top" Width="325"/>
         <Label Content="Klasse" HorizontalAlignment="Left" Margin="27,170,0,0" VerticalAlignment="Top"/>
-        <TextBox Name="name_txt" HorizontalAlignment="Left" Height="23" Margin="138,64,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
-        <TextBox Name="stnr_txt" HorizontalAlignment="Left" Height="23" Margin="138,92,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155"/>
-        <TextBox Name="vname_txt" HorizontalAlignment="Left" Height="23" Margin="138,21,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
+        <TextBox Name="name_txt" HorizontalAlignment="Left" Height="23" Margin="138,38,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
+        <TextBox Name="stnr_txt" HorizontalAlignment="Left" Height="23" Margin="138,94,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.56,-0.155"/>
+        <TextBox Name="vname_txt" HorizontalAlignment="Left" Height="23" Margin="138,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113" RenderTransformOrigin="0.56,-0.155"/>
         <Button  Name="btn_add" Content="Hinzufügen" HorizontalAlignment="Left" Height="59" Margin="27,201,0,0" VerticalAlignment="Top" Width="436" Click="btn_add_Click"/>
         <Label Content="Geschlecht" HorizontalAlignment="Left" Height="24" Margin="27,141,0,0" VerticalAlignment="Top" Width="70"/>
-        <ComboBox Name="cb_ges" HorizontalAlignment="Left" Height="21" Margin="138,144,0,0" VerticalAlignment="Top" Width="196">
+        <ComboBox Name="cb_ges" HorizontalAlignment="Left" Height="21" Margin="138,146,0,0" VerticalAlignment="Top" Width="196">
             <ComboBoxItem Content="Männlich"/>
             <ComboBoxItem Content="Weiblich"/>
                    </ComboBox>
         <Label Content="Jahrgang" HorizontalAlignment="Left" Margin="27,115,0,0" VerticalAlignment="Top" Width="65"/>
-        <TextBox HorizontalAlignment="Left" Height="19" Margin="138,120,0,0" Name="txt_jahr" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+        <TextBox HorizontalAlignment="Left" Height="19" Margin="138,122,0,0" Name="txt_jahr" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+        <TextBox Name="txt_Mannschaft" HorizontalAlignment="Left" Height="25" Margin="138,66,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="113"/>
+        <Label Content="Mannschaft" HorizontalAlignment="Left" Height="25" Margin="27,66,0,0" VerticalAlignment="Top" Width="80"/>
     </Grid>
 </Window>

@@ -55,7 +55,8 @@ namespace Time.piok
                 Teilnehmer.Geburtsjahr = int.Parse(txt_jahr.Text);
                 ComboBoxItem typeItem = (ComboBoxItem)cb_ges.SelectedItem;
                 Teilnehmer.Geschlecht = typeItem.Content.ToString();
-                Teilnehmer.Klasse = cb_cat.SelectedItem.ToString(); ;
+                Teilnehmer.Klasse = cb_cat.SelectedItem.ToString();
+                Teilnehmer.Mannschaft = txt_Mannschaft.Text;
                 Teilnehmer.Status = "DNS";
                 this.DialogResult = true;
             }

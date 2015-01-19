@@ -1,4 +1,4 @@
-﻿<Window x:Class="Time.piok.MainWindow"
+﻿<Window x:Class="Time.piok.MainWindow" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Time.piok" Height="350" Width="720" WindowState="Maximized"  MinHeight="350" MinWidth="720"  ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
@@ -52,14 +52,16 @@
         <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1" Grid.RowSpan="2">
             <ListView.View>
                 <GridView>
-                    <!--<GridViewColumn Header="RanStartnr." Width="50" DisplayMemberBinding="{Binding Path=RandomStartnummer}"/>-->
                     <GridViewColumn Header="Startnr." Width="auto" DisplayMemberBinding="{Binding Path=Startnummer}"/>
                     <GridViewColumn Header="Rang" Width="auto" DisplayMemberBinding="{Binding Path=Rang}"/>
                     <GridViewColumn Header="Vorname" Width="auto" DisplayMemberBinding="{Binding Path=Vorname}"/>
                     <GridViewColumn Header="Nachname" Width="auto" DisplayMemberBinding="{Binding Path=Nachname}"/>
                     <GridViewColumn Header="Klasse" Width="auto" DisplayMemberBinding="{Binding Path=Klasse}"/>
                     <GridViewColumn Header="Status" Width="auto" DisplayMemberBinding="{Binding Path=Status}"/>
-                    <GridViewColumn Header="Zeit" Width="auto" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                    <GridViewColumn Header="Mannschaft" Width="auto" DisplayMemberBinding="{Binding Path=Mannschaft}" />
+                    <GridViewColumn Header="1.Lauf" Width="auto" DisplayMemberBinding="{Binding Path=Lauf1, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                    <GridViewColumn Header="2.Lauf" Width="auto" DisplayMemberBinding="{Binding Path=Lauf2, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                    <GridViewColumn Header="Gesamtzeit" Width="auto" DisplayMemberBinding="{Binding Path=Endzeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
                     <GridViewColumn Header="Abstand" Width="auto" DisplayMemberBinding="{Binding Path=Abstand, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
                 </GridView>
             </ListView.View>
@@ -97,15 +99,24 @@
                 <MenuItem Name="btn_klasszuordnen" Header="Den Klassen zuordnen" Click="btnklasszu_Click"/>
             </MenuItem>
             <MenuItem Name="btn_add_class" Header="Klassen verwalten" Click="btn_categories_Click"/>
-            <MenuItem Name="btn_settings" Header="Einstellungen" Click="btn_settings_Click"/>
+            <MenuItem Header="Einstellungen">
+            <MenuItem Name="btn_settings_device" Header="Zeitnehmung" Click="btn_settings_device_Click"/>
+                <MenuItem Name="btn_settings_wertungen" Header="Wertungen" Click="btn_settings_wertungen_Click"/>
+            </MenuItem>
             <MenuItem Name="btn_starttiming" Header="Zeitnehmung starten" Click="btn_starttiming_Click" />
             <MenuItem Header="TdC8001 steuern" Name="btn_cont8001" IsEnabled="False">
                 <MenuItem Header="Startzeiten abrufen" Name="btn_callc0" Click="btn_callc0_Click"/>
                 <MenuItem Header="Zeilzeiten abrufen" Name="btn_callc1" Click="btn_callc1_Click"/>
                 <MenuItem Header="Nettozeiten abrufen" Name="btn_callrt" Click="btn_callrt_Click" />
             </MenuItem>
-            <MenuItem Name="btn_print" Header="Drucken"/>
+            <MenuItem Header="Drucken">
+                <MenuItem Name="btn_printstartlist" Header="Startliste nach Kategorien" Click="btn_print_startlist_Click"/>
+                <MenuItem Name="btn_printresultcat" Header="Ergebnisliste nach Kategorien" Click="btn_print_resultcat_Click"/>
+                <MenuItem Name="btn_printresultoverall" Header="Ergebnisliste Allgemein" Click="btn_print_resultoverall_Click"/>
+                <MenuItem Name="btn_printresultsex" Header="Ergebnisliste nach Geschlecht" Click="btn_print_resultsex_Click"/>
+            </MenuItem>
             <MenuItem x:Name="btn_close" Header="Schliessen" Click="btn_close_Click"/>
+            <ComboBox Grid.Column="2" Name="cb_lauf" SelectionChanged="cb_lauf_SelectionChanged"/>
         </Menu>
         <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" >
             <ProgressBar HorizontalAlignment="Left" Height="20" Width="200" Name="prgMain"/>
