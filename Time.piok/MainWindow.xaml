@@ -46,10 +46,20 @@
                 </DockPanel>
             </Button>
         </Grid>
-        <ListBox Name="listb" Grid.Column="1" Grid.Row="1">
-            <Label  Content="Timing Log"/>
-        </ListBox>
-        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1" Grid.RowSpan="2">
+        <ListView Name="listb" Grid.Column="1" Grid.Row="1">
+            <ListView.View>
+            <GridView>
+                <GridViewColumn Header="BIB" Width="auto" DisplayMemberBinding="{Binding Path=Startnummer}"/>
+                    <GridViewColumn Header="Laufende Zeit" Width="auto" DisplayMemberBinding="{Binding Path=LaufendeZeit, StringFormat={}{0:mm}:{0:ss}.{0:ff},FallbackValue=00:00.00}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ListView Name="listview" IsSynchronizedWithCurrentItem="True" Grid.Row="1" Grid.RowSpan="2" MouseRightButtonUp="listview_MouseRightButtonUp">
+            <ListView.ContextMenu>
+                <ContextMenu Name="Rechtsklickmenu">
+                    <MenuItem Header="Auf Tafel ausgeben" Name="AufTafelAusgeben" Click="AufTafelAusgeben_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Startnr." Width="auto" DisplayMemberBinding="{Binding Path=Startnummer}"/>
@@ -109,14 +119,18 @@
                 <MenuItem Header="Zeilzeiten abrufen" Name="btn_callc1" Click="btn_callc1_Click"/>
                 <MenuItem Header="Nettozeiten abrufen" Name="btn_callrt" Click="btn_callrt_Click" />
             </MenuItem>
+            <MenuItem Width="auto" Header="Speichern" Click="MenuItem_Click"/>
+
             <MenuItem Header="Drucken">
                 <MenuItem Name="btn_printstartlist" Header="Startliste nach Kategorien" Click="btn_print_startlist_Click"/>
                 <MenuItem Name="btn_printresultcat" Header="Ergebnisliste nach Kategorien" Click="btn_print_resultcat_Click"/>
                 <MenuItem Name="btn_printresultoverall" Header="Ergebnisliste Allgemein" Click="btn_print_resultoverall_Click"/>
-                <MenuItem Name="btn_printresultsex" Header="Ergebnisliste nach Geschlecht" Click="btn_print_resultsex_Click"/>
+                <MenuItem Name="btn_printresultges" Header="Ergebnisliste nach Geschlecht" Click="btn_print_resultges_Click"/>
+                <MenuItem Name="btn_printresult" Header="Mannschaftswertung"  Click="btn_print_resultteam_Click"/>
             </MenuItem>
             <MenuItem x:Name="btn_close" Header="Schliessen" Click="btn_close_Click"/>
             <ComboBox Grid.Column="2" Name="cb_lauf" SelectionChanged="cb_lauf_SelectionChanged"/>
+            <Label Content="Derzeit auf der Tafel:"  Width="auto" Height="25" Name="lbl_auftafel"/>
         </Menu>
         <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" >
             <ProgressBar HorizontalAlignment="Left" Height="20" Width="200" Name="prgMain"/>

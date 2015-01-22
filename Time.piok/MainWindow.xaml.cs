@@ -33,18 +33,24 @@ namespace Time.piok
     public partial class MainWindow : Window
     {
         DispatcherTimer timer;
+        bool tafel = true;
         ObservableCollection<Teilnehmer> liste = new ObservableCollection<Teilnehmer>();
+        ObservableCollection<Teilnehmer> laufendeliste = new ObservableCollection<Teilnehmer>();
         ObservableCollection<Kategorien> listek = new ObservableCollection<Kategorien>();
         ICollectionView ansicht;
         XmlSerializer xs = new XmlSerializer(typeof(ObservableCollection<Teilnehmer>));
         XmlSerializer xsk = new XmlSerializer(typeof(ObservableCollection<Kategorien>));
+        XmlSerializer xssettings = new XmlSerializer(typeof(ObservableCollection<Device>));
         Socket sock;
+        int lauf = -1;
         Device dev = new Device();
         Teilnehmer tt = new Teilnehmer();
         bool keepalive = true;
-        int wait;
+        bool laufendezeitrunning = true;
         Bewerbe bewerb = new Bewerbe();
-        SerialPort mySerialPort;
+        SerialPort mySerialPortCrono;
+        SerialPort mySerialPortBoard;
+        int boardindex;
         string state;
         public MainWindow()
         {
@@ -90,6 +96,7 @@ namespace Time.piok
                         read.Close();
                     }
                     listview.ItemsSource = liste;
+                    listb.ItemsSource = laufendeliste;
                     CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(listview.ItemsSource);
                     PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
                     view.GroupDescriptions.Add(groupDescription);
@@ -126,6 +133,8 @@ namespace Time.piok
             if (b.Anzlauf == 2)
                 cb_lauf.Items.Add("2.Lauf");
             cb_lauf.SelectedIndex = 0;
+            Thread laufendezeit = new Thread(LaufendeZeit);
+            laufendezeit.Start();
         }
 
         private void btn_settings_wertungen_Click(object sender, RoutedEventArgs e)
@@ -224,10 +233,12 @@ namespace Time.piok
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
             keepalive = false;
+            laufendezeitrunning = false;
+            tafel = false;
             if (state != "Zeitnehmung starten")
             {
                 if (dev.Com == true)
-                    mySerialPort.Close();
+                    mySerialPortCrono.Close();
 
                 else if (dev.Ethernet == true)
                     sock.Close();
@@ -262,9 +273,13 @@ namespace Time.piok
                 {
                     if (dev.Type == "Alge TdC 8001")
                         btn_cont8001.IsEnabled = true;
-                    mySerialPort = new SerialPort(dev.ComPort, dev.ComBaud, Parity.None, 8, StopBits.One);
-                    mySerialPort.Handshake = Handshake.None;
-                    try { mySerialPort.Open(); }
+                    mySerialPortCrono = new SerialPort(dev.ComPort, dev.ComBaud, Parity.None, 8, StopBits.One);
+                    mySerialPortCrono.Handshake = Handshake.None;
+                    if (dev.Type != "Alge TdC 8001")
+                        mySerialPortCrono.NewLine = "\r\n";
+                    else
+                        mySerialPortCrono.NewLine = "\r";
+                    try { mySerialPortCrono.Open(); }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
@@ -273,13 +288,27 @@ namespace Time.piok
                     btn_starttiming.Header = "Zeitnehmung stoppen";
                     state = "Zeitnehmung stoppen";
                     lbl_verbunden.Content = "Verbunden: " + dev.Type + "," + dev.ComPort + "," + dev.ComBaud.ToString();
-                    mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+                    mySerialPortCrono.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                 }
                 else
                     MessageBox.Show("Keine Einstellungen gewählt!!!");
+                if (dev.Board && dev.ComBoard != null)
+                {
+                    mySerialPortBoard = new SerialPort(dev.ComBoard, dev.BaudBoard, Parity.None, 8, StopBits.One);
+                    mySerialPortBoard.Handshake = Handshake.None;
+                    try { mySerialPortBoard.Open(); }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
+                    }
+                    Thread tr = new Thread(Tafelsteuern);
+                    tr.Start();
+                }
             }
             else
             {
+                tafel = false;
                 if (dev.Ethernet == true)
                 {
                     keepalive = false;
@@ -293,33 +322,35 @@ namespace Time.piok
                 {
                     btn_cont8001.IsEnabled = false;
                     keepalive = false;
-                    mySerialPort.Close();
+                    mySerialPortCrono.Close();
                     lbl_verbunden.Content = "Nicht verbunden";
                     btn_starttiming.Header = "Zeitnehmung starten";
                 }
+                try
+                {
+                    mySerialPortBoard.Close();
+                }
+                catch
+                { }
             }
         }
         private delegate void readHandler(string s);
         private delegate void statelb(int wert, int max);
         private delegate void resetlb();
+        private delegate void ausgabe_Tafel(string s);
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            int length = 0;
             string indata;
-            char[] bytesread = new char[16348];
-            System.Threading.Thread.Sleep(200);
-            while (length < mySerialPort.BytesToRead + length)
+            while (mySerialPortCrono.BytesToRead > 0)
             {
-                bytesread[length] = Convert.ToChar(mySerialPort.ReadByte());
-                Dispatcher.Invoke(new statelb(state_lb), length, mySerialPort.BytesToRead + length);
-                System.Threading.Thread.Sleep(wait);
-                length++;
+                try
+                {
+                    indata = mySerialPortCrono.ReadLine();
+                    Dispatcher.Invoke(new readHandler(serialread), indata);
+                }
+                catch
+                { }
             }
-            Dispatcher.Invoke(new resetlb(reset_lb));
-            indata = new string(bytesread, 0, length);
-            mySerialPort.DiscardInBuffer();
-            Dispatcher.Invoke(new readHandler(serialread), indata);
-
         }
         private void state_lb(int wert, int max)
         {
@@ -340,33 +371,7 @@ namespace Time.piok
 
             else if (dev.Type == "Microgate Rei2")
             {
-                int iLength = 0; ;
-                string[] strCutString;
-                string strCommand = "";
-                strCutString = s.Split('\n');
-                for (int i = 0; i < strCutString.Length; i++)
-                {
-                    strCutString[i] += '\n';
-                    do
-                    {
-                        iLength = strCutString[i].Length;
-
-                        if (iLength >= 52)
-                        {
-                            strCommand = strCutString[i];
-                            if (iLength > 52)
-                                strCommand = strCommand.Remove(52, strCommand.Length - 52);
-
-                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
-                                file.WriteLine(strCommand);
-
-                            MicrogateProtocol(strCommand);
-                            strCutString[i] = strCutString[i].Remove(0, 52);
-                        }
-                        else
-                            break;
-                    } while (iLength != 52);
-                }
+                MicrogateProtocol(s);
             }
         }
 
@@ -375,13 +380,12 @@ namespace Time.piok
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
                 file.WriteLine(s);
 
-            SplitLineTagHeuer(s);
+            TagHeuerProtocol_AusWertung(s);
         }
         private void TagHeuerProtocol_AusWertung(string s)
         {
             if (s.Contains("TN") || s.Contains("T-") || s.Contains("!N") || s.Contains("T+") || s.Contains("T="))
             {
-                listb.Items.Add(s);
                 string[] Teile = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 Teilnehmer tt = new Teilnehmer();
                 if (Teile[0] == "TN")
@@ -534,24 +538,10 @@ namespace Time.piok
                 }
             }
         }
-        private void SplitLineTagHeuer(string s)
-        {
-            string strLine;
-            string strTmp;
-            int index;
-            strTmp = s;
-            index = strTmp.IndexOf("\n");
-            if (s.Length < 5 || index <= 0)
-                return;
-
-            strLine = strTmp.Remove(index, strTmp.Length - index);
-            TagHeuerProtocol_AusWertung(strLine);
-            s = s.Remove(0, s.IndexOf("\n") + 1);
-            SplitLineTagHeuer(s);
-        }
         private void ClearZiel(int position)
         {         
                 liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
+                laufendeliste.Add(liste[position]);
                 if (cb_lauf.SelectedIndex == 0)
                 {
                     liste[position].Lauf1 = TimeSpan.Parse("00:00:00.00000");
@@ -560,9 +550,9 @@ namespace Time.piok
                 else if (cb_lauf.SelectedIndex == 1)
                 {
                     liste[position].Lauf2 = TimeSpan.Parse("00:00:00.00000");
-                    liste[position].Status2 = "DNF";
+                    liste[position].Status = "DNF";
                 }
-                liste[position].Endzeit = TimeSpan.Parse("00:00:00.00000");
+                liste[position].Endzeit = liste[position].Lauf1 + liste[position].Lauf2;
                 SortView();
                 Rang_zuweisen();
                 Abstand_ber();
@@ -573,7 +563,7 @@ namespace Time.piok
         {
             liste[position].Startzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
-            liste[position].Endzeit = TimeSpan.Parse("00:00:00.00000");
+            laufendeliste.Remove(liste[position]);
             if (cb_lauf.SelectedIndex == 0)
             {
                 liste[position].Status = "DNS";
@@ -581,9 +571,10 @@ namespace Time.piok
             }
             else if(cb_lauf.SelectedIndex==1)
             {
-                liste[position].Status2 = "DNS";
+                liste[position].Status = "DNS";
                 liste[position].Lauf1 = TimeSpan.Parse("00:00:00.00000");
             }
+            liste[position].Endzeit = liste[position].Lauf1 + liste[position].Lauf2;
             SortView();
             Rang_zuweisen();
             Abstand_ber();
@@ -591,7 +582,6 @@ namespace Time.piok
 
         private void MicrogateProtocol(string strCommand)
         {
-            listb.Items.Add(strCommand);
             char[] zeichen = strCommand.ToCharArray();
             string mode = zeichen[4].ToString() + zeichen[5].ToString();
             if (mode == "SO")
@@ -648,7 +638,6 @@ namespace Time.piok
         private void DSQ_COMP(int position)
         {
             liste[position].Status = "DSQ";
-            liste[position].Status2 = "DSQ";
             liste[position].Startzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Zielzeit = DateTime.Parse("00:00:00.00000");
             liste[position].Endzeit = TimeSpan.Parse("00:00:00.000000");
@@ -695,8 +684,8 @@ namespace Time.piok
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Time.piok\" + bewerb.Name + "\\timing_log.txt", true))
                 file.WriteLine(s);
-
-            SplitLineAlge(s);
+            if (IsLineValidAlge(s))
+                AlgeProtkoll_auswertung(s);
         }
 
         private bool IsLineValidAlge(string s)
@@ -709,33 +698,10 @@ namespace Time.piok
             return result;
         }
 
-        private void SplitLineAlge(string s)
-        {
-            string strLine;
-            string strTmp;
-            int index;
-
-            strTmp = s;
-
-            index = strTmp.IndexOf("\r");
-            if (s.Length < 5 || index <= 0)
-                return;
-
-            strLine = strTmp.Remove(index, strTmp.Length - index);
-
-            if (IsLineValidAlge(strLine))
-                AlgeProtkoll_auswertung(strLine);
-
-            s = s.Remove(0, s.IndexOf("\r") + 1);
-
-            SplitLineAlge(s);
-        }
-
         private void AlgeProtkoll_auswertung(string s)
         {
 
             char[] zeichen = s.ToCharArray();
-            listb.Items.Add(s);
             string startnummer = zeichen[1].ToString() + zeichen[2].ToString() + zeichen[3].ToString() + zeichen[4].ToString();
             if (zeichen[0] == ' ' || zeichen[0] == 'i')
             {
@@ -769,6 +735,13 @@ namespace Time.piok
                     {
                         Zielzeit_zuweisen(uhrzeit, position);
                     }
+                    if(zeichen[0] == 'n')
+                    {
+                        Teilnehmer t = new Teilnehmer();
+                        t.Startnummer =  int.Parse(zeichen[1].ToString() + zeichen[2].ToString() + zeichen[3].ToString() + zeichen[4].ToString());
+                        int position1 = liste.IndexOf(t);
+                        TafelIndex_Changed(position1);
+                    }
                 }
             }
             else if (zeichen[0] == 'c')
@@ -801,7 +774,9 @@ namespace Time.piok
 
         private void Startzeit_zuweisen(string uhrzeit, int position)
         {
+            liste[position].Generated_Start = DateTime.Now;
             liste[position].Startzeit = DateTime.Parse(uhrzeit);
+            laufendeliste.Add(liste[position]);
             liste[position].Status = "DNF";
             SortView();
             Rang_zuweisen();
@@ -812,9 +787,10 @@ namespace Time.piok
         {
             liste[position].Zielzeit = DateTime.Parse(uhrzeit);
             liste[position].Status = "OK";
+            laufendeliste.Remove(liste[position]);
             if (cb_lauf.SelectedIndex == 0)
             {
-                liste[position].Lauf1 = liste[position].Startzeit - liste[position].Zielzeit;
+                liste[position].Lauf1 = liste[position].Zielzeit - liste[position].Startzeit;
                 int precision = 2;
                 const int TIMESPAN_SIZE = 7;
                 int factor = (int)Math.Pow(10, (TIMESPAN_SIZE - precision));
@@ -822,13 +798,14 @@ namespace Time.piok
             }
             else if (cb_lauf.SelectedIndex == 1)
             {
-                liste[position].Lauf2 = liste[position].Startzeit - liste[position].Zielzeit;
+                liste[position].Lauf2 = liste[position].Zielzeit - liste[position].Startzeit;
                 int precision = 2;
                 const int TIMESPAN_SIZE = 7;
                 int factor = (int)Math.Pow(10, (TIMESPAN_SIZE - precision));
-                liste[position].Lauf1 = new TimeSpan(liste[position].Lauf1.Ticks - (liste[position].Lauf1.Ticks % factor));
+                liste[position].Lauf2 = new TimeSpan(liste[position].Lauf1.Ticks - (liste[position].Lauf1.Ticks % factor));
             }
             liste[position].Endzeit = liste[position].Lauf1 + liste[position].Lauf2;
+            laufendeliste.Remove(liste[position]);
             SortView();
             Rang_zuweisen();
             Abstand_ber();
@@ -862,7 +839,14 @@ namespace Time.piok
         }
         private void btn_settings_device_Click(object sender, RoutedEventArgs e)
         {
+            XmlSerializer ser = new XmlSerializer(typeof(Device));
             Device d = new Device();
+            if(File.Exists(@"c:\Time.piok\" + bewerb.Name + "\\settings_device.xml"))
+            {
+                StreamReader sr = new StreamReader(@"c:\Time.piok\" + bewerb.Name + "\\settings_device.xml");
+                d= (Device)ser.Deserialize(sr);
+                sr.Close();
+            }
             Settings s1 = new Settings(d);
             bool? result1 = s1.ShowDialog();
             if (result1.HasValue && result1.Value)
@@ -873,17 +857,14 @@ namespace Time.piok
                 dev.Type = d.Type;
                 dev.ComBaud = d.ComBaud;
                 dev.ComPort = d.ComPort;
+                dev.Board = d.Board;
+                dev.BoardType = d.BoardType;
+                dev.BaudBoard = d.BaudBoard;
+                dev.ComBoard = d.ComBoard;
+                FileStream str = new FileStream(@"c:\Time.piok\" + bewerb.Name + "\\settings_device.xml", FileMode.Create);
+                ser.Serialize(str, dev);
+                str.Close();
             }
-            if (dev.ComBaud == 1200)
-                wait = 80;
-            if (dev.ComBaud == 2400)
-                wait = 40;
-            if (dev.ComBaud == 4800)
-                wait = 20;
-            if (dev.ComBaud == 9600)
-                wait = 10;
-            else
-                wait = 5;
         }
 
 
@@ -1184,18 +1165,18 @@ namespace Time.piok
 
         private void btn_callrt_Click(object sender, RoutedEventArgs e)
         {
-            try{mySerialPort.Write("CALRT\r");}
+            try{mySerialPortCrono.Write("CALRT\r");}
             catch(Exception ex){MessageBox.Show(ex.Message);}
         }
 
         private void btn_callc0_Click(object sender, RoutedEventArgs e)
         {
-            try { mySerialPort.Write("PALST\r"); }
+            try { mySerialPortCrono.Write("PALST\r"); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
         private void btn_callc1_Click(object sender, RoutedEventArgs e)
         {
-            try { mySerialPort.Write("PALFT\r"); }
+            try { mySerialPortCrono.Write("PALFT\r"); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
@@ -1317,11 +1298,106 @@ namespace Time.piok
             }
         
         }
-        private void btn_print_resultsex_Click(object sender, RoutedEventArgs e)
+        private void btn_print_resultges_Click(object sender, RoutedEventArgs e)
         {
             result_byges();
         }
 
+        private void btn_print_resultteam_Click(object sender, RoutedEventArgs e)
+        {
+            result_byteam();
+        }
+
+        private void result_byteam()
+        {
+
+            PrintDialog prd = new System.Windows.Controls.PrintDialog();
+            if (prd.ShowDialog() == true)
+            {
+                ICollectionView Teamwertung = CollectionViewSource.GetDefaultView(liste);
+                PropertyGroupDescription groupDescription = new PropertyGroupDescription("Mannschaft");
+                Teamwertung.GroupDescriptions.Add(groupDescription);
+                Teamwertung.SortDescriptions.Add(new SortDescription("Startnummer", ListSortDirection.Ascending));
+                Paragraph myParagraph = new Paragraph();
+                FlowDocument doc = new FlowDocument();
+                Table table1 = new Table();
+                doc.Blocks.Add(table1);
+                table1.CellSpacing = 10;
+                table1.Background = Brushes.White;
+                int Collumnumber = 5;
+                for (int i = 0; i < Collumnumber; i++)
+                {
+                    table1.Columns.Add(new TableColumn());
+                }
+                table1.RowGroups.Add(new TableRowGroup());
+                table1.RowGroups[0].Rows.Add(new TableRow());
+                TableRow currentRow = table1.RowGroups[0].Rows[0];
+                currentRow.Background = Brushes.Silver;
+                currentRow.FontSize = 40;
+                currentRow.FontWeight = System.Windows.FontWeights.Bold;
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Mannschaftwertung"))));
+                currentRow.Cells[0].ColumnSpan = 8;
+                table1.RowGroups[0].Rows.Add(new TableRow());
+                currentRow = table1.RowGroups[0].Rows[1];
+                currentRow.FontSize = 12;
+                currentRow.FontWeight = FontWeights.Bold;
+                //Feldbezeichnungen Erstellen
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("StNr"))));
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Vorname"))));
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Nachname"))));
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Jahrgang"))));
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Geschlecht"))));
+                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Gesamt"))));
+                //Inhalt der Zeilen
+                table1.RowGroups[0].Rows.Add(new TableRow());
+                int row = 2;
+                int catrow = 2;
+                currentRow = table1.RowGroups[0].Rows[catrow];
+                currentRow.FontSize = 12;
+                currentRow.FontWeight = FontWeights.Normal;
+                foreach (CollectionViewGroup g in Teamwertung.Groups)
+                {
+                    table1.RowGroups[0].Rows.Add(new TableRow());
+                    table1.RowGroups[0].Rows[catrow].Background = Brushes.Silver;
+                    table1.RowGroups[0].Rows[catrow].FontSize = 12;
+                    table1.RowGroups[0].Rows[catrow].FontWeight = FontWeights.Bold;
+                    table1.RowGroups[0].Rows[catrow].Cells.Add(new TableCell(new Paragraph(new Run(g.Name.ToString()))));
+                    table1.RowGroups[0].Rows[catrow].Cells[0].ColumnSpan = 8;
+                    row = catrow + 1;
+
+
+                    foreach (Teilnehmer t in g.Items)
+                    {
+                        table1.RowGroups[0].Rows.Add(new TableRow());
+                        currentRow = table1.RowGroups[0].Rows[row];
+                        currentRow.FontSize = 12;
+                        currentRow.FontWeight = FontWeights.Normal;
+                        if (row % 2 == 1)
+                            currentRow.Background = Brushes.LightSalmon;
+                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Startnummer.ToString()))));
+                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Vorname))));
+                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Nachname))));
+                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geburtsjahr.ToString()))));
+                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geschlecht))));
+                        row++;
+                        table1.RowGroups[0].Rows.Add(new TableRow());
+                        currentRow = table1.RowGroups[0].Rows[row];
+                        currentRow.FontSize = 12;
+                        currentRow.FontWeight = FontWeights.Normal;
+                    }
+                    catrow = row + 1;
+                }
+                //Druckeinstellungen     
+                doc.PageHeight = prd.PrintableAreaHeight;
+                doc.PageWidth = prd.PrintableAreaWidth;
+                doc.PagePadding = new Thickness(50);
+                doc.ColumnGap = 0;
+                doc.ColumnWidth = prd.PrintableAreaWidth;
+                IDocumentPaginatorSource dps = doc;
+                prd.PrintDocument(dps.DocumentPaginator, bewerb.Name + " Startliste");
+
+            }
+        }
         private void result_byges()
         {
             ICollectionView erglisteges = CollectionViewSource.GetDefaultView(liste);
@@ -1370,53 +1446,53 @@ namespace Time.piok
                 currentRow = table1.RowGroups[0].Rows[catrow];
                 currentRow.FontSize = 12;
                 currentRow.FontWeight = FontWeights.Normal;
-                foreach (CollectionViewGroup g in erglisteges.Groups)
-                {
-                    table1.RowGroups[0].Rows.Add(new TableRow());
-                    table1.RowGroups[0].Rows[catrow].Background = Brushes.Silver;
-                    table1.RowGroups[0].Rows[catrow].FontSize = 12;
-                    table1.RowGroups[0].Rows[catrow].FontWeight = FontWeights.Bold;
-                    table1.RowGroups[0].Rows[catrow].Cells.Add(new TableCell(new Paragraph(new Run(g.Name.ToString()))));
-                    table1.RowGroups[0].Rows[catrow].Cells[0].ColumnSpan = 8;
-                    row = catrow + 1;
-
-
-                    /*foreach (Teilnehmer t in g.Items)
+                    CollectionViewGroup gr = erglisteges.Groups[0] as CollectionViewGroup;
+                    foreach (CollectionViewGroup g in gr.Items)
                     {
                         table1.RowGroups[0].Rows.Add(new TableRow());
-                        currentRow = table1.RowGroups[0].Rows[row];
-                        currentRow.FontSize = 12;
-                        currentRow.FontWeight = FontWeights.Normal;
-                        if (row % 2 == 1)
-                            currentRow.Background = Brushes.LightSalmon;
-                        if (t.Rang != 0)
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Rang.ToString()))));
-                        else
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(""))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Startnummer.ToString()))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Vorname))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Nachname))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geburtsjahr.ToString()))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geschlecht))));
-                        if (t.Rang != 0)
-                        {
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Endzeit.ToString()))));
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Abstand.ToString()))));
-                        }
-                        else
-                        {
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Status))));
-                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Status))));
-                        }
-                        row++;
-                        table1.RowGroups[0].Rows.Add(new TableRow());
-                        currentRow = table1.RowGroups[0].Rows[row];
-                        currentRow.FontSize = 12;
-                        currentRow.FontWeight = FontWeights.Normal;
-                    }*/
-                    catrow = row + 1;
-                }
+                        table1.RowGroups[0].Rows[catrow].Background = Brushes.Silver;
+                        table1.RowGroups[0].Rows[catrow].FontSize = 12;
+                        table1.RowGroups[0].Rows[catrow].FontWeight = FontWeights.Bold;
+                        table1.RowGroups[0].Rows[catrow].Cells.Add(new TableCell(new Paragraph(new Run(g.Name.ToString()))));
+                        table1.RowGroups[0].Rows[catrow].Cells[0].ColumnSpan = 8;
+                        row = catrow + 1;
 
+
+                        foreach (Teilnehmer t in g.Items)
+                        {
+                            table1.RowGroups[0].Rows.Add(new TableRow());
+                            currentRow = table1.RowGroups[0].Rows[row];
+                            currentRow.FontSize = 12;
+                            currentRow.FontWeight = FontWeights.Normal;
+                            if (row % 2 == 1)
+                                currentRow.Background = Brushes.LightSalmon;
+                            if (t.Rang != 0)
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Rang.ToString()))));
+                            else
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(""))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Startnummer.ToString()))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Vorname))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Nachname))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geburtsjahr.ToString()))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geschlecht))));
+                            if (t.Rang != 0)
+                            {
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Endzeit.ToString()))));
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Abstand.ToString()))));
+                            }
+                            else
+                            {
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Status))));
+                                currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Status))));
+                            }
+                            row++;
+                            table1.RowGroups[0].Rows.Add(new TableRow());
+                            currentRow = table1.RowGroups[0].Rows[row];
+                            currentRow.FontSize = 12;
+                            currentRow.FontWeight = FontWeights.Normal;
+                        }
+                        catrow = row + 1;
+                    }
                 //Druckeinstellungen     
                 doc.PageHeight = prd.PrintableAreaHeight;
                 doc.PageWidth = prd.PrintableAreaWidth;
@@ -1561,92 +1637,95 @@ namespace Time.piok
             PrintDialog prd = new System.Windows.Controls.PrintDialog();
             if (prd.ShowDialog() == true)
             {
-                 ICollectionView startliste = CollectionViewSource.GetDefaultView(liste);
-                 PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
-                 startliste.GroupDescriptions.Add(groupDescription);
-                 startliste.SortDescriptions.Add(new SortDescription("Startnummer", ListSortDirection.Ascending));
-                Paragraph myParagraph = new Paragraph();
-                FlowDocument doc = new FlowDocument();
-                Table table1 = new Table();
-                doc.Blocks.Add(table1);
-                table1.CellSpacing = 10;
-                table1.Background = Brushes.White;
-                int Collumnumber = 5;
-                for (int i = 0; i < Collumnumber; i++)
+                if (cb_lauf.SelectedIndex == 0)
                 {
-                    table1.Columns.Add(new TableColumn());
-                }
-                table1.RowGroups.Add(new TableRowGroup());
-                table1.RowGroups[0].Rows.Add(new TableRow());
-                TableRow currentRow = table1.RowGroups[0].Rows[0];
-                currentRow.Background = Brushes.Silver;
-                currentRow.FontSize = 40;
-                currentRow.FontWeight = System.Windows.FontWeights.Bold;
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Startliste"))));
-                currentRow.Cells[0].ColumnSpan = 8;
-                table1.RowGroups[0].Rows.Add(new TableRow());
-                currentRow = table1.RowGroups[0].Rows[1];
-                currentRow.FontSize = 12;
-                currentRow.FontWeight = FontWeights.Bold;
-                //Feldbezeichnungen Erstellen
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("StNr"))));
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Vorname"))));
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Nachname"))));
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Jahrgang"))));
-                currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Geschlecht"))));
-                //Inhalt der Zeilen
-                table1.RowGroups[0].Rows.Add(new TableRow());
-                int row = 2;
-                int catrow = 2;
-                currentRow = table1.RowGroups[0].Rows[catrow];
-                currentRow.FontSize = 12;
-                currentRow.FontWeight = FontWeights.Normal;
-                foreach (CollectionViewGroup g in startliste.Groups)
-                {
+                    ICollectionView startliste = CollectionViewSource.GetDefaultView(liste);
+                    PropertyGroupDescription groupDescription = new PropertyGroupDescription("Klasse");
+                    startliste.GroupDescriptions.Add(groupDescription);
+                    startliste.SortDescriptions.Add(new SortDescription("Startnummer", ListSortDirection.Ascending));
+                    Paragraph myParagraph = new Paragraph();
+                    FlowDocument doc = new FlowDocument();
+                    Table table1 = new Table();
+                    doc.Blocks.Add(table1);
+                    table1.CellSpacing = 10;
+                    table1.Background = Brushes.White;
+                    int Collumnumber = 5;
+                    for (int i = 0; i < Collumnumber; i++)
+                    {
+                        table1.Columns.Add(new TableColumn());
+                    }
+                    table1.RowGroups.Add(new TableRowGroup());
                     table1.RowGroups[0].Rows.Add(new TableRow());
-                    table1.RowGroups[0].Rows[catrow].Background = Brushes.Silver;
-                    table1.RowGroups[0].Rows[catrow].FontSize = 12;
-                    table1.RowGroups[0].Rows[catrow].FontWeight = FontWeights.Bold;
-                    table1.RowGroups[0].Rows[catrow].Cells.Add(new TableCell(new Paragraph(new Run(g.Name.ToString()))));
-                    table1.RowGroups[0].Rows[catrow].Cells[0].ColumnSpan = 8;
-                    row = catrow + 1;
-
-
-                    foreach (Teilnehmer t in g.Items)
+                    TableRow currentRow = table1.RowGroups[0].Rows[0];
+                    currentRow.Background = Brushes.Silver;
+                    currentRow.FontSize = 40;
+                    currentRow.FontWeight = System.Windows.FontWeights.Bold;
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Startliste"))));
+                    currentRow.Cells[0].ColumnSpan = 8;
+                    table1.RowGroups[0].Rows.Add(new TableRow());
+                    currentRow = table1.RowGroups[0].Rows[1];
+                    currentRow.FontSize = 12;
+                    currentRow.FontWeight = FontWeights.Bold;
+                    //Feldbezeichnungen Erstellen
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("StNr"))));
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Vorname"))));
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Nachname"))));
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Jahrgang"))));
+                    currentRow.Cells.Add(new TableCell(new Paragraph(new Run("Geschlecht"))));
+                    //Inhalt der Zeilen
+                    table1.RowGroups[0].Rows.Add(new TableRow());
+                    int row = 2;
+                    int catrow = 2;
+                    currentRow = table1.RowGroups[0].Rows[catrow];
+                    currentRow.FontSize = 12;
+                    currentRow.FontWeight = FontWeights.Normal;
+                    foreach (CollectionViewGroup g in startliste.Groups)
                     {
                         table1.RowGroups[0].Rows.Add(new TableRow());
-                        currentRow = table1.RowGroups[0].Rows[row];
-                        currentRow.FontSize = 12;
-                        currentRow.FontWeight = FontWeights.Normal;
-                        if (row % 2 == 1)
-                            currentRow.Background = Brushes.LightSalmon;
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Startnummer.ToString()))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Vorname))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Nachname))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geburtsjahr.ToString()))));
-                        currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geschlecht))));
-                        row++;
-                        table1.RowGroups[0].Rows.Add(new TableRow());
-                        currentRow = table1.RowGroups[0].Rows[row];
-                        currentRow.FontSize = 12;
-                        currentRow.FontWeight = FontWeights.Normal;
-                    }
-                    catrow = row + 1;
-                }
-                //Druckeinstellungen     
-                doc.PageHeight = prd.PrintableAreaHeight;
-                doc.PageWidth = prd.PrintableAreaWidth;
-                doc.PagePadding = new Thickness(50);
-                doc.ColumnGap = 0;
-                doc.ColumnWidth = prd.PrintableAreaWidth;
-                IDocumentPaginatorSource dps = doc;
-                prd.PrintDocument(dps.DocumentPaginator, bewerb.Name + " Startliste");
+                        table1.RowGroups[0].Rows[catrow].Background = Brushes.Silver;
+                        table1.RowGroups[0].Rows[catrow].FontSize = 12;
+                        table1.RowGroups[0].Rows[catrow].FontWeight = FontWeights.Bold;
+                        table1.RowGroups[0].Rows[catrow].Cells.Add(new TableCell(new Paragraph(new Run(g.Name.ToString()))));
+                        table1.RowGroups[0].Rows[catrow].Cells[0].ColumnSpan = 8;
+                        row = catrow + 1;
 
+
+                        foreach (Teilnehmer t in g.Items)
+                        {
+                            table1.RowGroups[0].Rows.Add(new TableRow());
+                            currentRow = table1.RowGroups[0].Rows[row];
+                            currentRow.FontSize = 12;
+                            currentRow.FontWeight = FontWeights.Normal;
+                            if (row % 2 == 1)
+                                currentRow.Background = Brushes.LightSalmon;
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Startnummer.ToString()))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Vorname))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Nachname))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geburtsjahr.ToString()))));
+                            currentRow.Cells.Add(new TableCell(new Paragraph(new Run(t.Geschlecht))));
+                            row++;
+                            table1.RowGroups[0].Rows.Add(new TableRow());
+                            currentRow = table1.RowGroups[0].Rows[row];
+                            currentRow.FontSize = 12;
+                            currentRow.FontWeight = FontWeights.Normal;
+                        }
+                        catrow = row + 1;
+                    }
+                    //Druckeinstellungen     
+                    doc.PageHeight = prd.PrintableAreaHeight;
+                    doc.PageWidth = prd.PrintableAreaWidth;
+                    doc.PagePadding = new Thickness(50);
+                    doc.ColumnGap = 0;
+                    doc.ColumnWidth = prd.PrintableAreaWidth;
+                    IDocumentPaginatorSource dps = doc;
+                    prd.PrintDocument(dps.DocumentPaginator, bewerb.Name + " Startliste");
+                }
             }
         }
 
         private void cb_lauf_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            lauf = cb_lauf.SelectedIndex + 1;
             for (int i = 0; i < liste.Count;i++ )
             {
                 if (cb_lauf.SelectedIndex == 0)
@@ -1655,13 +1734,96 @@ namespace Time.piok
                     {
                         liste[i].Status = "OK";
                     }
+                    
                 }
                 else if (cb_lauf.SelectedIndex == 1)
-                    if (liste[i].Status != "DSQ" && liste[i].Status!="DNF")
+                    if (liste[i].Status != "DSQ" && liste[i].Status != "DNF")
+                    {
                         liste[i].Status = "DNS";
-                writelist();
-            }
+                        liste[i].Endzeit = TimeSpan.Parse("00:00:00.00000");
+                        liste[i].Abstand = TimeSpan.Parse("00:00:00.00000");
+                        liste[i].Rang = 0;
+                    }
                 
+            }
+            SortView();
+            Abstand_ber();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            writelist();
+            MessageBox.Show("Gespeichert!");
+        }
+        public void LaufendeZeit()
+        {
+            while (laufendezeitrunning)
+            {
+                
+                for (int i = 0; i < laufendeliste.Count; i++)
+                {
+                    int position = liste.IndexOf(laufendeliste[i]);
+                    if (lauf == 1)
+                        if (laufendeliste.Count > 0)
+                        {
+                            try
+                            {
+                                laufendeliste[i].LaufendeZeit = DateTime.Now - laufendeliste[i].Generated_Start;
+                            }
+                            catch
+                            { }
+                        }
+                        else if (lauf == 2)
+                        {
+                            try
+                            {
+                                if (laufendeliste.Count > 0)
+                                    laufendeliste[i].LaufendeZeit = (laufendeliste[i].Generated_Start - DateTime.Now) + liste[position].Lauf1;
+                            }
+                            catch
+                            { }
+                            }
+                    
+                }
+            }
+        }
+        private void Tafelsteuern()
+        {
+            string ausgabe = "";
+            while(tafel)
+            {
+                //NNN.xxxxHH.MM.SSxxxx(CR) Laufende Zeit, ohne Zehntel
+                //NNNCxxxxHH:MM:SS.zhtRR(CR) Stehende Zeit, mit Rang
+                if (liste[boardindex].Status == "DNF")
+                    ausgabe = string.Format("{0:000}.    {1:00}.{2:00}.{3:00}    \r", liste[boardindex].Startnummer, liste[boardindex].LaufendeZeit.Hours, liste[boardindex].LaufendeZeit.Minutes, liste[boardindex].LaufendeZeit.Seconds);
+                else if (liste[boardindex].Status == "OK")
+                    ausgabe = string.Format("{0:000}C    {1:00}:{2:00}:{3:00}.{4:000}{5:00}\r", liste[boardindex].Startnummer, liste[boardindex].Endzeit.Hours, liste[boardindex].Endzeit.Minutes, liste[boardindex].Endzeit.Seconds, liste[boardindex].Endzeit.Milliseconds,liste[boardindex].Rang);
+                Dispatcher.Invoke(new ausgabe_Tafel(lbl_tafel_Changed),ausgabe);
+                mySerialPortBoard.Write(ausgabe);
+                Thread.Sleep(100);
+            }
+        }
+        private void lbl_tafel_Changed(string s)
+        {
+            lbl_auftafel.Content = s;
+        }
+        private void listview_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Rechtsklickmenu.IsOpen = true;
+        }
+
+
+        private void AufTafelAusgeben_Click(object sender, RoutedEventArgs e)
+        {
+            int position = liste.IndexOf(listview.SelectedItem as Teilnehmer);
+            if(position>-1)
+            TafelIndex_Changed(position);
+
+        }
+
+        private void TafelIndex_Changed(int position)
+        {
+            boardindex = position;
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Time.piok
         string geschlecht;
         DateTime startzeit;
         DateTime zielzeit;
+        TimeSpan laufendeZeit;
         int rang;
         string mannschaft;
         int geburtsjahr;
@@ -28,15 +29,10 @@ namespace Time.piok
         string loaded;
         string status;
         int randStartnummer;
-        string status2;
         TimeSpan lauf1;
         TimeSpan lauf2;
+        DateTime generiertestartzeit;
 
-        public string Status2
-    {
-        set { status2 = value; }
-        get { return status2; }
-    }
         [XmlIgnore]
         public TimeSpan Lauf1
         {
@@ -206,7 +202,23 @@ namespace Time.piok
             }
             get { return rang; }
         }
-
+        [XmlIgnore]
+        public DateTime Generated_Start
+        {
+            set { generiertestartzeit = value;}
+            get { return generiertestartzeit; }
+        }
+        [XmlIgnore]
+        public TimeSpan LaufendeZeit
+        {
+            set
+            {
+                laufendeZeit = value;
+                OnPropertyChanged("LaufendeZeit");
+            }
+            
+            get { return laufendeZeit; }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string name)

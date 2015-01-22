@@ -13,11 +13,11 @@
             <RowDefinition Height="115*"/>
             <RowDefinition Height="55*"/>
         </Grid.RowDefinitions>
-        <CheckBox   IsChecked="False" Name="cb_mannschaft" Content="Mannschaftwertung"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+        <CheckBox   IsChecked="False" Name="cb_mannschaft" Content="Mannschaftwertung"  Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="30,0,0,0"/>
         <Label Content="Mannschaftwertung mit x Läufern" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
         <TextBox Name="txt_anzlaeuf" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Width="40" Height="25" VerticalAlignment="Bottom" Margin="0,0,30.6,0"/>
-        <Label Content="Anzahl BIBO im 2.DG" Grid.Column="1" Margin="9.6,5,119.6,79.2" Grid.Row="2" Width="auto"/>
-        <TextBox Name="txt_bibo" IsEnabled="False" RenderTransformOrigin="6.451,2.692" Grid.Row="2" Margin="192.6,5,-0.4,74.2" Grid.Column="1"/>
+        <Label Content="Anzahl BIBO im 2.DG" Margin="30,5,129.6,79.2" Grid.Row="2" Width="auto" Grid.ColumnSpan="2"/>
+        <TextBox Name="txt_bibo" IsEnabled="False" Height="25" RenderTransformOrigin="6.451,2.692" Grid.Row="2" Margin="192.6,5,30.6,79.2" Grid.Column="1"/>
         <Button Name="btn_ok" Content="OK" Grid.Row="3" Grid.Column="1" Click="btn_ok_Click"/>
     </Grid>
 </Window>

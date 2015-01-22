@@ -15,10 +15,16 @@ namespace Time.piok
         int anz_mannschaft;
         bool mannschaft;
         string timeformat;
+        int bibo;
         public string TimeFormat
         {
             set { timeformat = value; }
             get { return timeformat; }
+        }
+        public int Bibo
+        {
+            set{bibo = value;}
+            get { return bibo; }
         }
         public int Anzlauf
         {

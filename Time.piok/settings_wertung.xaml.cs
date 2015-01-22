@@ -35,6 +35,9 @@ namespace Time.piok
                 bewerb.Anzahl_Mannschaft = int.Parse(txt_anzlaeuf.Text);
             else
                 MessageBox.Show("Hacken Mannschaftswertung entfernen, ansonsten Textbox ausfüllen");
+            if (txt_bibo.Text != "")
+                bewerb.Bibo = int.Parse(txt_bibo.Text);
+                
         }
     }
 }

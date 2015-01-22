@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO.Ports;
 
+
 namespace Time.piok
 {
     
@@ -27,8 +28,10 @@ namespace Time.piok
             foreach (string port in ports)
             {
                 cb_com.Items.Add(port);
+                cb_com_board.Items.Add(port);
             }
             cb_type.SelectedIndex = 0;
+            cb_type_board.SelectedIndex = 1;
             if (cb_com.Items.Count == 1)
             {
                 rb_com.IsEnabled = false;
@@ -42,6 +45,8 @@ namespace Time.piok
                 cb_baud.SelectedIndex = 3;
                 cb_com.Items.Remove(cb_com.SelectedItem = 0);
             }
+            if (cb_com_board.Items.Count > 0)
+                cb_board.IsEnabled = true;
         }
 
         private void btn_set_Click(object sender, RoutedEventArgs e)
@@ -56,17 +61,43 @@ namespace Time.piok
             ComboBoxItem Item = (ComboBoxItem)cb_baud.SelectedItem;
             device.ComBaud = int.Parse(Item.Content.ToString());
             device.ComPort = cb_com.SelectedItem.ToString();  
-        }
+            }
+            if(cb_board.IsChecked.HasValue && cb_board.IsChecked.Value)
+            {
+                device.Board = true;
+                ComboBoxItem boardtype = (ComboBoxItem)cb_type_board.SelectedItem;
+                device.BoardType = boardtype.Content.ToString();
+                device.ComBoard = cb_com_board.SelectedItem.ToString();
+                ComboBoxItem boardbaud = (ComboBoxItem)cb_baud_board.SelectedItem;
+                device.BaudBoard = int.Parse(boardbaud.Content.ToString());
+            }
             this.DialogResult = true;
         }
 
         private void cb_com_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-if(cb_type.SelectedIndex != 0)
-{
-    rb_ethernet.IsEnabled = false;
-    txt_IP.IsEnabled = false;
-}
+                    if(cb_type.SelectedIndex != 0)
+                    {
+                     rb_ethernet.IsEnabled = false;
+                     txt_IP.IsEnabled = false;
+                    }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            cb_baud_board.IsEnabled = true;
+            cb_type_board.IsEnabled = true;
+            cb_com_board.IsEnabled = true;
+            cb_baud_board.SelectedIndex = 1;
+            cb_com_board.SelectedIndex = 0;
+            cb_type_board.SelectedIndex = 0;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            cb_baud_board.IsEnabled = false;
+            cb_type_board.IsEnabled = false;
+            cb_com_board.IsEnabled = false;
         }
     }
 }
